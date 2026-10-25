@@ -1001,8 +1001,8 @@ function renderBuffs() {
       const ib = elfOrder.indexOf(b.id);
       return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib);
     });
-    parts.push(group('공통', elfCommon.map(cell).join('')));
     parts.push(group('요정', pick));
+    parts.push(group('공통', elfCommon.map(cell).join('')));
   }
   box.innerHTML = parts.join('');
 }
