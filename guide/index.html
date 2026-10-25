@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>리니지 클래식 DPS · 도건유튜브</title>
+  <title>리니지 클래식 · 도건유튜브</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;800;900&display=swap" rel="stylesheet">
@@ -13,7 +13,6 @@
       --ink: #f6edd6;
       --muted: #cbb994;
       --gold: #e4c36a;
-      --card: #17130e;
       --line: rgba(228, 195, 106, 0.28);
     }
     * { box-sizing: border-box; }
@@ -29,90 +28,26 @@
     .wrap {
       width: min(760px, calc(100% - 28px));
       margin: 0 auto;
-      padding: 28px 0 56px;
+      padding: 48px 0 56px;
     }
-    header { text-align: center; margin-bottom: 18px; }
-    .title-card {
-      margin: 0 0 14px;
-      padding: 28px 18px 24px;
-      border-radius: 16px;
-      border: 1px solid var(--line);
-      background:
-        radial-gradient(420px 120px at 50% 0%, rgba(228, 195, 106, 0.16), transparent 70%),
-        #100c08;
-    }
-    .title-card p {
+    header { text-align: center; margin-bottom: 28px; }
+    h1 {
       margin: 0;
-      color: var(--gold);
-      font-size: clamp(22px, 4vw, 32px);
+      font-size: clamp(26px, 5vw, 36px);
       font-weight: 900;
+      color: var(--gold);
       letter-spacing: -0.03em;
     }
-    .title-card span {
-      display: block;
-      margin-top: 6px;
-      color: var(--muted);
-      font-size: 13px;
-      font-weight: 800;
-    }
-    h1 {
-      margin: 0 0 8px;
-      font-size: clamp(22px, 4vw, 28px);
-      font-weight: 900;
-      color: var(--gold);
-      letter-spacing: -0.02em;
-    }
     .lead {
-      margin: 0 auto 22px;
-      max-width: 34em;
+      margin: 8px 0 0;
       color: var(--muted);
       font-size: 14px;
-      font-weight: 700;
-      line-height: 1.55;
+      font-weight: 800;
     }
-    .video {
-      position: relative;
-      width: 100%;
-      aspect-ratio: 16 / 9;
-      border-radius: 16px;
-      overflow: hidden;
-      border: 1px solid var(--line);
-      background: #100c08;
-      box-shadow: 0 18px 40px rgba(0, 0, 0, .45);
-    }
-    .video iframe {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      border: 0;
-    }
-    .video.empty {
-      display: grid;
-      place-items: center;
-      color: var(--muted);
-      text-align: center;
-    }
-    .video.empty strong {
+    .tools { display: grid; gap: 12px; }
+    .tool {
       display: block;
-      color: var(--gold);
-      font-size: 22px;
-      font-weight: 900;
-    }
-    .video.empty span {
-      display: block;
-      margin-top: 6px;
-      font-size: 13px;
-      font-weight: 700;
-    }
-    .actions {
-      display: grid;
-      gap: 12px;
-      margin-top: 24px;
-    }
-    .cta {
-      display: block;
-      padding: 20px 22px;
+      padding: 22px 22px;
       border-radius: 16px;
       border: 2px solid #ffe08a;
       background: linear-gradient(180deg, #f3d56a 0%, #d4a93a 100%);
@@ -121,112 +56,23 @@
       text-decoration: none;
       font-size: 20px;
       font-weight: 900;
-      letter-spacing: 0.03em;
+      letter-spacing: -0.02em;
       box-shadow:
         0 0 0 1px rgba(0, 0, 0, .35),
-        0 10px 28px rgba(243, 213, 106, .35),
-        0 0 40px rgba(243, 213, 106, .18);
-      animation: cta-pulse 1.8s ease-in-out infinite;
+        0 10px 28px rgba(243, 213, 106, .28);
     }
-    .cta:hover {
-      filter: brightness(1.06);
-      transform: translateY(-1px);
-    }
-    .cta small {
-      display: block;
-      margin-top: 4px;
-      font-size: 12px;
-      font-weight: 800;
-      opacity: .78;
-    }
-    @keyframes cta-pulse {
-      0%, 100% { box-shadow: 0 0 0 1px rgba(0,0,0,.35), 0 10px 28px rgba(243,213,106,.35), 0 0 40px rgba(243,213,106,.18); }
-      50% { box-shadow: 0 0 0 1px rgba(0,0,0,.35), 0 12px 34px rgba(243,213,106,.5), 0 0 56px rgba(243,213,106,.32); }
-    }
-    .sub {
-      display: block;
-      padding: 12px 14px;
-      border-radius: 12px;
-      border: 1px solid var(--line);
-      background: var(--card);
-      color: var(--muted);
-      text-align: center;
-      text-decoration: none;
-      font-size: 13px;
-      font-weight: 800;
-    }
-    a.sub:hover { color: #fffdf6; border-color: var(--gold); }
-    .sub.off { opacity: .55; }
-    .note {
-      margin: 16px 0 0;
-      color: #8f866f;
-      font-size: 12px;
-      font-weight: 700;
-      line-height: 1.5;
-      text-align: center;
-    }
+    .tool:hover { filter: brightness(1.06); transform: translateY(-1px); }
   </style>
 </head>
 <body>
   <div class="wrap">
     <header>
-      <div class="title-card">
-        <p>리니지 클래식 DPS 측정기</p>
-        <span>도건유튜브</span>
-      </div>
-      <h1>도건유튜브 · DPS 가이드</h1>
-      <p class="lead">영상을 먼저 확인한 뒤 DPS 측정기를 사용해 주세요.</p>
+      <h1>리니지 클래식</h1>
+      <p class="lead">도건유튜브</p>
     </header>
-
-    <div class="video empty" id="video-slot">
-      <div>
-        <strong>영상 준비 중</strong>
-        <span>가이드 영상이 올라오면 이 자리에 재생됩니다.</span>
-      </div>
+    <div class="tools">
+      <a class="tool" href="https://linkstyle84-sketch.github.io/lin-dps/">리니지 클래식 무기 DPS 측정기</a>
     </div>
-
-    <div class="actions">
-      <a class="cta" id="open-tool" href="https://linkstyle84-sketch.github.io/lin-dps/">
-        DPS 측정기 사용하기
-        <small>측정기가 새 창으로 열립니다</small>
-      </a>
-      <span class="sub off" id="watch-only">유튜브에서 영상만 보기 · 영상 준비 중</span>
-    </div>
-    <p class="note">유튜브 더보기·고정 댓글 링크:<br>https://linkstyle84-sketch.github.io/lin-dps/guide/</p>
   </div>
-  <script>
-    // 영상을 올리면 아래 아이디만 넣으면 됩니다. 예: "abcDEF12345"
-    var YT_ID = "";
-    var toolUrl = "https://linkstyle84-sketch.github.io/lin-dps/";
-
-    (function () {
-      var btn = document.getElementById("open-tool");
-      var slot = document.getElementById("video-slot");
-      var watch = document.getElementById("watch-only");
-      if (!YT_ID) {
-        btn.addEventListener("click", function (e) {
-          e.preventDefault();
-          window.open(toolUrl, "_blank", "noopener,noreferrer");
-        });
-        return;
-      }
-      var yt = "https://www.youtube.com/watch?v=" + YT_ID;
-      slot.className = "video";
-      slot.innerHTML = '<iframe src="https://www.youtube.com/embed/' + YT_ID + '" title="도건유튜브 리니지 클래식 DPS 가이드" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>';
-      var link = document.createElement("a");
-      link.className = "sub";
-      link.href = yt;
-      link.target = "_blank";
-      link.rel = "noopener";
-      link.textContent = "유튜브에서 영상만 보기";
-      watch.replaceWith(link);
-      btn.querySelector("small").textContent = "유튜브와 DPS 측정기가 각각 새 창으로 열립니다";
-      btn.addEventListener("click", function (e) {
-        e.preventDefault();
-        window.open(yt, "_blank", "noopener,noreferrer");
-        window.open(toolUrl, "_blank", "noopener,noreferrer");
-      });
-    })();
-  </script>
 </body>
 </html>
