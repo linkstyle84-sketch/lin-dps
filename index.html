@@ -983,7 +983,13 @@ function renderBuffs() {
     parts.push(group('기사', knight.map(cell).join('')));
     parts.push(group('공통', common.map(cell).join('')));
   } else {
+    const elfOrder = ['전강', '인챈트웨폰', '음식명중', '음식추타'];
     const elfCommon = common.filter((b) => !ELF_HIDE_COMMON.has(b.id)).concat(elf);
+    elfCommon.sort((a, b) => {
+      const ia = elfOrder.indexOf(a.id);
+      const ib = elfOrder.indexOf(b.id);
+      return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib);
+    });
     parts.push(group('공통', elfCommon.map(cell).join('')));
     parts.push(group('요정', pick));
   }
