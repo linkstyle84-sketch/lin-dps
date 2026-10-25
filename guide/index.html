@@ -108,6 +108,14 @@
       카톡: linkstyle7<br>
       이메일: <a href="mailto:linkstyle84@gmail.com">linkstyle84@gmail.com</a>
     </p>
+    <p class="ad-contact"><a href="stats.html">이용 수 보기</a></p>
   </div>
+  <script src="../count.js"></script>
+  <script>
+    LinCount.hit('guide', true);
+    document.querySelector('.tool').addEventListener('click', function () {
+      LinCount.hit('open', false);
+    });
+  </script>
 </body>
 </html>

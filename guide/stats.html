@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>이용 수 · 리니지 클래식</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0c0a08;
+      --ink: #f6edd6;
+      --muted: #cbb994;
+      --gold: #e4c36a;
+      --line: rgba(228, 195, 106, 0.28);
+    }
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      background:
+        radial-gradient(900px 380px at 50% -60px, #3a2410 0%, transparent 62%),
+        var(--bg);
+      color: var(--ink);
+      font-family: "Noto Sans KR", sans-serif;
+    }
+    .wrap { width: min(760px, calc(100% - 28px)); margin: 0 auto; padding: 48px 0 56px; }
+    h1 { margin: 0 0 8px; text-align: center; color: var(--gold); font-size: 28px; font-weight: 900; }
+    .lead { margin: 0 0 22px; text-align: center; color: var(--muted); font-size: 14px; font-weight: 700; line-height: 1.6; }
+    .row {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: center;
+      margin: 0 0 10px;
+      padding: 16px 18px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: rgba(228, 195, 106, 0.06);
+    }
+    .row span { font-weight: 800; }
+    .row b { color: var(--gold); font-size: 28px; font-weight: 900; }
+    .back { display: block; margin-top: 22px; text-align: center; color: var(--muted); font-weight: 800; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>이용 수</h1>
+    <p class="lead">같은 브라우저에서 다시 열면 한 사람으로 셉니다. 측정기 버튼은 누를 때마다 셉니다. 이 집계를 붙인 뒤의 숫자만 쌓입니다.</p>
+    <div class="row"><span>안내 페이지를 연 사람</span><b id="guide">…</b></div>
+    <div class="row"><span>측정기를 연 사람</span><b id="tool">…</b></div>
+    <div class="row"><span>측정기 버튼을 누른 횟수</span><b id="open">…</b></div>
+    <a class="back" href="./">안내 페이지로</a>
+  </div>
+  <script src="../count.js"></script>
+  <script>
+    ['guide', 'tool', 'open'].forEach(function (key) {
+      LinCount.read(key).then(function (n) {
+        document.getElementById(key).textContent = n == null ? '-' : String(n);
+      });
+    });
+  </script>
+</body>
+</html>
