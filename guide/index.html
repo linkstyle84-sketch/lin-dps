@@ -48,6 +48,42 @@
         0 10px 28px rgba(243, 213, 106, .28);
     }
     .tool:hover { filter: brightness(1.06); transform: translateY(-1px); }
+    .banner-row {
+      display: grid;
+      grid-template-columns: 1fr 27%;
+      align-items: stretch;
+      width: 100%;
+      margin: 0 0 16px;
+      overflow: hidden;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background: #0a1220;
+    }
+    .banner-row img {
+      width: 100%;
+      height: auto;
+      display: block;
+      object-fit: contain;
+      object-position: center center;
+    }
+    .member-cta {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      padding: 8px 10px;
+      text-decoration: none;
+      text-align: center;
+      color: #f6ebd4;
+      background: linear-gradient(#6b3f24, #3d2416);
+      border-left: 2px solid #2a160e;
+      font-weight: 800;
+      line-height: 1.25;
+    }
+    .member-cta:hover { filter: brightness(1.08); }
+    .member-cta strong { font-size: clamp(13px, 2.2vw, 18px); }
+    .member-cta span { font-size: clamp(11px, 1.7vw, 14px); color: #f0d2a8; }
     .banner {
       display: grid;
       place-items: center;
@@ -93,10 +129,22 @@
       text-align: center;
     }
     .counts b { color: var(--gold); font-size: 18px; font-weight: 900; }
+    @media (max-width: 640px) {
+      .banner-row { grid-template-columns: 1fr; }
+      .banner-row img { height: auto; }
+      .member-cta { padding: 12px 10px; border-left: 0; border-top: 2px solid #2a160e; }
+    }
   </style>
 </head>
 <body>
   <div class="wrap">
+    <div class="banner-row">
+      <img src="banner.png" alt="도건유튜브">
+      <a class="member-cta" href="https://www.youtube.com/channel/UCk6f0jViRYWOi5BcHaDLZXQ/join" target="_blank" rel="noopener">
+        <strong>도건형 커피값 투척</strong>
+        <span>+멤버쉽가입 여기클릭</span>
+      </a>
+    </div>
     <div class="banner">배너 광고 구함</div>
     <div class="tools">
       <a class="tool" href="https://linkstyle84-sketch.github.io/lin-dps/">리니지 클래식 무기 DPS 측정기</a>
