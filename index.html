@@ -218,20 +218,45 @@ body.class-elf .knight-only { display: none; }
 .warn { color: var(--danger); }
 
 .bar-row { display: grid; grid-template-columns: 92px 1fr 56px; gap: 8px; align-items: center; font-size: 14px; color: var(--text); }
-.bar-row.rank { grid-template-columns: 28px 188px 1fr 56px; margin-bottom: 8px; }
 .bar-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .bar-name .num { font-size: 14px; }
 .bar-track { height: 10px; background: #101010; border: 1px solid var(--line-dim); border-radius: 0; overflow: hidden; }
 .bar-fill { height: 100%; background: linear-gradient(90deg, #8a6a2e, var(--bar)); }
 .bar-val { text-align: right; font-size: 14px; }
-.compare-tabs { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 8px; }
+.compare-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 10px; }
+.compare-tabs button.small { font-size: 16px; padding: 8px 14px; }
 .compare-tabs .on { background: #3a3016; color: var(--gold-2); }
-.compare-note { margin: 0 0 12px; color: var(--text); font-size: 14px; }
-.cmp-weapon { margin: 0 0 14px; }
-.cmp-head { display: grid; grid-template-columns: 28px 1fr auto; gap: 8px; align-items: center; margin-bottom: 6px; }
-.cmp-rank { text-align: right; }
-.cmp-total b { font-size: 16px; font-weight: 400; }
-.cmp-bars { display: flex; flex-direction: column; gap: 4px; padding-left: 36px; }
+.compare-note { margin: 0 0 14px; color: var(--text); font-size: 15px; }
+.cmp-list { display: flex; flex-direction: column; gap: 4px; }
+.cmp-line, .cmp-head {
+  display: grid;
+  grid-template-columns: 42px 72px minmax(150px, 240px) 1fr auto;
+  gap: 14px;
+  align-items: center;
+}
+.cmp-line { min-height: 78px; margin-bottom: 6px; }
+.cmp-weapon { margin: 0 0 18px; padding-bottom: 8px; border-bottom: 1px solid #3a3120; }
+.cmp-thumb {
+  width: 72px;
+  height: 72px;
+  object-fit: contain;
+  image-rendering: pixelated;
+  background: #101010;
+  border: 1px solid var(--line);
+}
+span.cmp-thumb { display: block; }
+.cmp-rank { font-size: 26px; color: var(--gold-2); text-align: center; }
+.cmp-label { font-size: 20px; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cmp-label .num { font-size: 20px; }
+.cmp-line .bar-track { height: 26px; }
+.cmp-score { font-size: 26px; text-align: right; min-width: 72px; }
+.cmp-total { font-size: 16px; white-space: nowrap; }
+.cmp-total b { font-size: 24px; font-weight: 400; color: var(--gold-2); }
+.cmp-bars { display: flex; flex-direction: column; gap: 8px; padding: 8px 0 0 128px; }
+.cmp-bars .bar-row { grid-template-columns: 108px 1fr 64px; font-size: 16px; }
+.cmp-bars .bar-name .num, .cmp-bars .bar-val { font-size: 16px; }
+.cmp-bars .bar-track { height: 18px; }
+.modal-card.wide { width: min(1100px, 100%); }
 
 .modal[hidden] { display: none; }
 .modal { position: fixed; inset: 0; z-index: 30; display: grid; place-items: center; padding: 24px; }
@@ -1088,6 +1113,12 @@ function totalScore(result) {
   return GAUGES.reduce((sum, [key]) => sum + (gaugeValue(result, key) || 0), 0);
 }
 
+function weaponThumb(name) {
+  const art = name && typeof WEAPON_IMG !== 'undefined' ? WEAPON_IMG[name] : '';
+  if (!art) return '<span class="cmp-thumb"></span>';
+  return `<img class="cmp-thumb" alt="" src="${art}">`;
+}
+
 function barHtml(label, value, max) {
   if (value == null) {
     return `<div class="bar-row"><span class="bar-name">${esc(label)}</span><div class="bar-track"><div class="bar-fill" style="width:0%"></div></div><span class="bar-val num">-</span></div>`;
@@ -1167,16 +1198,15 @@ function compareHtml(view) {
   const body = rows.map((row, index) => {
     const result = row.item.result;
     const name = paintNums(`+${result.enchant} ${result.name}`);
+    const thumb = weaponThumb(result.name);
     if (mode === 'all') {
       const gauges = GAUGES.map(([key, label]) => barHtml(label, gaugeValue(result, key), maxes[key])).join('');
-      return `<div class="cmp-weapon"><div class="cmp-head"><span class="cmp-rank num">${index + 1}</span><span class="bar-name">${name}</span><span class="cmp-total">총점 <b class="num">${row.total.toFixed(1)}</b></span></div><div class="cmp-bars">${gauges}</div></div>`;
+      return `<div class="cmp-weapon"><div class="cmp-head"><span class="cmp-rank num">${index + 1}</span>${thumb}<span class="cmp-label">${name}</span><span class="cmp-total">총점 <b class="num">${row.total.toFixed(1)}</b></span></div><div class="cmp-bars">${gauges}</div></div>`;
     }
     const val = gaugeValue(result, mode);
-    if (val == null) {
-      return `<div class="bar-row rank"><span class="cmp-rank num">${index + 1}</span><span class="bar-name">${name}</span><div class="bar-track"><div class="bar-fill" style="width:0%"></div></div><span class="bar-val num">-</span></div>`;
-    }
-    const width = Math.max(0, Math.min(100, (val / singleMax) * 100));
-    return `<div class="bar-row rank"><span class="cmp-rank num">${index + 1}</span><span class="bar-name">${name}</span><div class="bar-track"><div class="bar-fill" style="width:${width}%"></div></div><span class="bar-val num">${val.toFixed(1)}</span></div>`;
+    const shown = val == null ? '-' : val.toFixed(1);
+    const width = val == null || singleMax <= 0 ? 0 : Math.max(0, Math.min(100, (val / singleMax) * 100));
+    return `<div class="cmp-line"><span class="cmp-rank num">${index + 1}</span>${thumb}<span class="cmp-label">${name}</span><div class="bar-track"><div class="bar-fill" style="width:${width}%"></div></div><span class="cmp-score num">${shown}</span></div>`;
   }).join('');
   return `<div class="compare-tabs">${tabs}</div><p class="compare-note">${note}</p><div class="cmp-list">${body}</div>`;
 }
@@ -1185,6 +1215,7 @@ function closePopup() {
   state.popup = null;
   const modal = document.getElementById('modal');
   modal.hidden = true;
+  document.querySelector('.modal-card')?.classList.remove('wide');
   document.body.classList.remove('modal-open');
 }
 
@@ -1199,6 +1230,7 @@ function renderPopup(view) {
   }
   modal.hidden = false;
   document.body.classList.add('modal-open');
+  document.querySelector('.modal-card').classList.toggle('wide', state.popup === 'compare');
   document.getElementById('modalTitle').textContent = state.popup === 'detail' ? '무기 상세' : '무기비교';
   document.getElementById('modalBody').innerHTML = state.popup === 'detail' ? heroHtml(view) : compareHtml(view);
 }
