@@ -975,6 +975,7 @@ function renderMaterials() {
 
 function metricOf(result) {
   if (!result || result.empty || result.missing) return null;
+  if ((state.sortKey === 'dpsUndeadSmall' || state.sortKey === 'dpsUndeadLarge') && !hasUndead(result)) return null;
   return result[state.sortKey];
 }
 
@@ -1028,7 +1029,7 @@ function buildLines(result) {
   else lines.push(`작몹 DPS ${fmtNum(result.avgHit)} × ${result.hitRate.toFixed(1)}% × ${fmtAps(result.aps)} = ${result.dpsSmall.toFixed(1)}`);
   if (p.undeadAvg > 0) lines.push(`언데드 주사위 1~${fmtNum(p.undeadMax)} (기본 ${fmtNum(p.undeadBase)} + 강화 ${fmtNum(result.enchant)}) → 평균 ${fmtNum(p.undeadAvg)} 가산`);
   else lines.push('언데드 추타 없음');
-  lines.push(`큰몹 1타 ${fmtNum(result.avgLarge)} · 언데드 작 1타 ${fmtNum(result.avgUndeadSmall)} · 언데드 큰 1타 ${fmtNum(result.avgUndeadLarge)}`);
+  lines.push(`큰몹 1타 ${fmtNum(result.avgLarge)} · 언데드 작 1타 ${hasUndead(result) ? fmtNum(result.avgUndeadSmall) : '-'} · 언데드 큰 1타 ${hasUndead(result) ? fmtNum(result.avgUndeadLarge) : '-'}`);
   return lines;
 }
 
@@ -1040,11 +1041,23 @@ function namedRows(view) {
   return view.filter((item) => item.row.name && item.result && !item.result.missing && !item.result.empty);
 }
 
+function hasUndead(result) {
+  return !!(result && result.parts && result.parts.undeadAvg > 0);
+}
+
+function gaugeValue(result, key) {
+  if ((key === 'dpsUndeadSmall' || key === 'dpsUndeadLarge') && !hasUndead(result)) return null;
+  return Number(result[key]) || 0;
+}
+
 function totalScore(result) {
-  return GAUGES.reduce((sum, [key]) => sum + (Number(result[key]) || 0), 0);
+  return GAUGES.reduce((sum, [key]) => sum + (gaugeValue(result, key) || 0), 0);
 }
 
 function barHtml(label, value, max) {
+  if (value == null) {
+    return `<div class="bar-row"><span class="bar-name">${esc(label)}</span><div class="bar-track"><div class="bar-fill" style="width:0%"></div></div><span class="bar-val num">-</span></div>`;
+  }
   const width = max > 0 ? Math.max(0, Math.min(100, (value / max) * 100)) : 0;
   return `<div class="bar-row"><span class="bar-name">${esc(label)}</span><div class="bar-track"><div class="bar-fill" style="width:${width}%"></div></div><span class="bar-val num">${value.toFixed(1)}</span></div>`;
 }
@@ -1053,13 +1066,23 @@ function heroHtml(view) {
   const picked = view.find((item) => item.row.id === state.selectedId && item.row.name);
   const result = picked?.result;
   const label = sortLabel();
-  const score = result && !result.missing && !result.empty ? result[state.sortKey] : null;
+  const undeadSort = state.sortKey === 'dpsUndeadSmall' || state.sortKey === 'dpsUndeadLarge';
+  const score = result && !result.missing && !result.empty
+    ? (undeadSort && !hasUndead(result) ? null : result[state.sortKey])
+    : null;
+  const scoreText = result && !result.missing && !result.empty && undeadSort && !hasUndead(result)
+    ? '-'
+    : (score == null ? '—' : Number(score).toFixed(1));
   const title = !picked ? '무기 없음' : result.missing ? '무기 없음' : `+${result.enchant} ${result.name}`;
   const meta = !result || result.empty || result.missing
     ? '무기를 고르면 계산이 여기에 나옵니다.'
     : `${result.type} · ${result.transform || '변신 없음'} · 공속 ${result.apsNote || (result.aps == null ? '—' : fmtAps(result.aps))}`;
   const chips = SORTS.map(([key, name]) => {
-    const val = result && !result.missing && !result.empty ? result[key].toFixed(1) : '—';
+    let val = '—';
+    if (result && !result.missing && !result.empty) {
+      const shown = gaugeValue(result, key);
+      val = shown == null ? '-' : shown.toFixed(1);
+    }
     return `<div class="chip"><span>${name}</span><b>${val}</b></div>`;
   }).join('');
   const art = result && !result.missing && result.name && typeof WEAPON_IMG !== 'undefined' ? WEAPON_IMG[result.name] : '';
@@ -1077,7 +1100,7 @@ function heroHtml(view) {
         </div>
         <div class="dps-block">
           <div class="dps-label">${esc(label)}</div>
-          <div class="dps-num">${score == null ? '—' : Number(score).toFixed(1)}<span class="dps-unit">/s</span></div>
+          <div class="dps-num">${scoreText}<span class="dps-unit">/s</span></div>
         </div>
       </div>
       <div class="chips">${chips}</div>
@@ -1093,8 +1116,8 @@ function compareHtml(view) {
   }));
   const mode = COMPARE_MODES.some(([key]) => key === state.compareMode) ? state.compareMode : 'all';
   rows.sort((a, b) => {
-    const av = mode === 'all' ? a.total : (a.item.result[mode] || 0);
-    const bv = mode === 'all' ? b.total : (b.item.result[mode] || 0);
+    const av = mode === 'all' ? a.total : (gaugeValue(a.item.result, mode) || 0);
+    const bv = mode === 'all' ? b.total : (gaugeValue(b.item.result, mode) || 0);
     return bv - av;
   });
   const tabs = COMPARE_MODES.map(([key, name]) => `<button type="button" class="ghost small${mode === key ? ' on' : ''}" data-compare="${key}">${name}</button>`).join('');
@@ -1104,16 +1127,19 @@ function compareHtml(view) {
   if (!rows.length) {
     return `<div class="compare-tabs">${tabs}</div><p class="compare-note">${note}</p><p class="compare-note">비교할 무기가 없습니다.</p>`;
   }
-  const maxes = Object.fromEntries(GAUGES.map(([key]) => [key, Math.max(0.01, ...rows.map((row) => row.item.result[key] || 0))]));
-  const singleMax = mode === 'all' ? 0 : Math.max(0.01, ...rows.map((row) => row.item.result[mode] || 0));
+  const maxes = Object.fromEntries(GAUGES.map(([key]) => [key, Math.max(0.01, ...rows.map((row) => gaugeValue(row.item.result, key) || 0))]));
+  const singleMax = mode === 'all' ? 0 : Math.max(0.01, ...rows.map((row) => gaugeValue(row.item.result, mode) || 0));
   const body = rows.map((row, index) => {
     const result = row.item.result;
     const name = paintNums(`+${result.enchant} ${result.name}`);
     if (mode === 'all') {
-      const gauges = GAUGES.map(([key, label]) => barHtml(label, result[key] || 0, maxes[key])).join('');
+      const gauges = GAUGES.map(([key, label]) => barHtml(label, gaugeValue(result, key), maxes[key])).join('');
       return `<div class="cmp-weapon"><div class="cmp-head"><span class="cmp-rank num">${index + 1}</span><span class="bar-name">${name}</span><span class="cmp-total">총점 <b class="num">${row.total.toFixed(1)}</b></span></div><div class="cmp-bars">${gauges}</div></div>`;
     }
-    const val = result[mode] || 0;
+    const val = gaugeValue(result, mode);
+    if (val == null) {
+      return `<div class="bar-row rank"><span class="cmp-rank num">${index + 1}</span><span class="bar-name">${name}</span><div class="bar-track"><div class="bar-fill" style="width:0%"></div></div><span class="bar-val num">-</span></div>`;
+    }
     const width = Math.max(0, Math.min(100, (val / singleMax) * 100));
     return `<div class="bar-row rank"><span class="cmp-rank num">${index + 1}</span><span class="bar-name">${name}</span><div class="bar-track"><div class="bar-fill" style="width:${width}%"></div></div><span class="bar-val num">${val.toFixed(1)}</span></div>`;
   }).join('');
@@ -1179,6 +1205,7 @@ function renderTable(view) {
     const apsClass = result && (result.apsNote === '활만' || result.apsNote === '근거리만') ? 'aps-bad' : '';
     const cell = (key, digits) => {
       if (!row.name || !result || result.missing || result.empty) return '—';
+      if ((key === 'dpsUndeadSmall' || key === 'dpsUndeadLarge') && !hasUndead(result)) return '-';
       const n = result[key];
       if (digits == null) return fmtNum(n);
       return Number(n).toFixed(digits);
