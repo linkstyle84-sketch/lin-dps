@@ -389,7 +389,21 @@ span.row-art, span.menu-art { display: inline-block; }
   border: 1px solid var(--line);
   box-shadow: 0 12px 28px rgba(0, 0, 0, 0.55);
 }
-.wgroup { padding: 8px 8px 2px; color: var(--gold); font-size: 13px; }
+.wgroup {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 8px 8px 2px;
+  color: var(--gold-2);
+  font-size: 13px;
+  letter-spacing: 0;
+}
+.wgroup::before, .wgroup::after {
+  content: "";
+  flex: 1;
+  height: 2px;
+  background: var(--gold);
+}
 .wopt {
   display: flex;
   align-items: center;
