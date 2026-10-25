@@ -92,30 +92,21 @@
     .ad-contact a { color: inherit; text-decoration: none; }
     .ad-contact a:hover { color: #fffdf6; text-decoration: underline; }
     .counts {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 8px 28px;
       margin-top: 28px;
-      padding: 8px 18px 10px;
+      padding: 14px 18px;
       border-radius: 16px;
       border: 1px solid var(--line);
       background: rgba(228, 195, 106, 0.06);
-    }
-    .counts p {
-      margin: 8px 0 2px;
-      text-align: center;
-      color: var(--gold);
-      font-size: 16px;
-      font-weight: 900;
-    }
-    .count-row {
-      display: flex;
-      justify-content: space-between;
-      gap: 12px;
-      align-items: center;
-      padding: 7px 0;
       color: var(--muted);
-      font-size: 14px;
+      font-size: 15px;
       font-weight: 800;
+      text-align: center;
     }
-    .count-row b { color: var(--gold); font-size: 20px; font-weight: 900; }
+    .counts b { color: var(--gold); font-size: 18px; font-weight: 900; }
   </style>
 </head>
 <body>
@@ -133,28 +124,24 @@
       카톡: linkstyle7<br>
       이메일: <a href="mailto:linkstyle84@gmail.com">linkstyle84@gmail.com</a>
     </p>
-    <div class="counts">
-      <p>이용 수</p>
-      <div class="count-row"><span>안내 페이지 방문</span><b id="guide">…</b></div>
-      <div class="count-row"><span>측정기 방문</span><b id="tool">…</b></div>
-      <div class="count-row"><span>측정기 버튼</span><b id="open">…</b></div>
-    </div>
+    <p class="counts"><span>방문자 수: <b id="guide">…</b></span><span>무기 DPS 측정기 방문자수: <b id="tool">…</b></span></p>
   </div>
-  <script src="../count.js"></script>
+  <script src="../count.js?v=3"></script>
   <script>
     function paintCount(key, n) {
       document.getElementById(key).textContent = n == null ? '-' : String(n);
     }
-    LinCount.hit('guide', false).then(function (n) {
-      if (n == null) LinCount.read('guide').then(function (v) { paintCount('guide', v); });
-      else paintCount('guide', n);
-    });
-    ['tool', 'open'].forEach(function (key) {
-      LinCount.read(key).then(function (n) { paintCount(key, n); });
-    });
-    document.querySelector('.tool').addEventListener('click', function () {
-      LinCount.hit('open', false);
-    });
+    function asPromise(value) {
+      if (value && typeof value.then === 'function') return value;
+      return Promise.resolve(null);
+    }
+    if (window.LinCount) {
+      LinCount.read('tool').then(function (n) { paintCount('tool', n); });
+      asPromise(LinCount.hit('guide', false)).then(function (n) {
+        if (n == null) LinCount.read('guide').then(function (v) { paintCount('guide', v); });
+        else paintCount('guide', n);
+      });
+    }
   </script>
 </body>
 </html>
