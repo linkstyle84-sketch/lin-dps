@@ -560,8 +560,8 @@ function calcRow(db, profile, row) {
   const arrow = resolveArrow(profile, weapon);
   const sums = summarize(db, profile);
   const blocked = !!weapon.noEnchant;
-  const encStep = blocked ? 0 : Math.max(0, enchant - 6);
-  const encTier = blocked ? 0 : enchant >= 11 ? 5 : enchant >= 10 ? 2 : 0;
+  const encStep = blocked ? 0 : Math.max(0, enchant);
+  const encTier = 0;
   const stat = pair(db.stats, cls, profile.stat);
   const level = pair(db.levels, cls, profile.level);
   const levelDmg = cls === '기사' ? (isBow ? 0 : level.dmg) : isBow ? level.dmg : 0;
