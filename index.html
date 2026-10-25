@@ -263,9 +263,19 @@ table { width: max-content; border-collapse: collapse; font-size: 14px; }
 th, td { padding: 6px 7px; border-bottom: 1px solid #3a3120; white-space: nowrap; text-align: right; }
 th { position: sticky; top: 0; background: #241e14; color: var(--text); font-weight: 400; z-index: 1; }
 th button { background: none; border: 0; color: inherit; padding: 0; font-size: 14px; }
+th button[data-sort] { position: relative; }
 th button.on { color: var(--gold-2); }
+th button.on::after {
+  content: "↓";
+  position: absolute;
+  right: 0;
+  top: -9px;
+  font-size: 11px;
+  line-height: 1;
+  color: var(--gold-2);
+}
+th button.on[data-dir="asc"]::after { content: "↑"; }
 th button.sort-clear {
-  margin-left: 6px;
   border: 1px solid var(--line);
   background: #16130e;
   color: var(--text);
@@ -372,7 +382,7 @@ footer.note { margin-top: 8px; color: var(--muted); font-size: 14px; }
               <th><button type="button" data-sort="dpsLarge" data-label="큰몹">큰몹</button></th>
               <th><button type="button" data-sort="dpsUndeadSmall" data-label="언데드 작">언데드 작</button></th>
               <th><button type="button" data-sort="dpsUndeadLarge" data-label="언데드 큰">언데드 큰</button></th>
-              <th></th>
+              <th id="sortClearHead"></th>
               <th></th>
             </tr>
           </thead>
@@ -1245,20 +1255,22 @@ function renderTable(view) {
 }
 
 function renderSortHeads() {
-  document.getElementById('clearSort')?.remove();
+  const slot = document.getElementById('sortClearHead');
+  if (slot) slot.replaceChildren();
   for (const btn of document.querySelectorAll('thead button[data-sort]')) {
     const on = !!state.sortKey && btn.dataset.sort === state.sortKey;
-    btn.classList.toggle('on', on);
     const base = btn.dataset.label;
-    btn.textContent = on ? `${base} ${state.sortDir === 'asc' ? '↑' : '↓'}` : base;
-    if (on) {
-      const clear = document.createElement('button');
-      clear.id = 'clearSort';
-      clear.type = 'button';
-      clear.className = 'sort-clear';
-      clear.textContent = '해제';
-      btn.after(clear);
-    }
+    btn.classList.toggle('on', on);
+    btn.dataset.dir = on ? state.sortDir : '';
+    btn.textContent = base;
+  }
+  if (state.sortKey && slot) {
+    const clear = document.createElement('button');
+    clear.id = 'clearSort';
+    clear.type = 'button';
+    clear.className = 'sort-clear';
+    clear.textContent = '해제';
+    slot.appendChild(clear);
   }
 }
 
