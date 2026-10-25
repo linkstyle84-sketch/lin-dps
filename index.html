@@ -565,13 +565,15 @@ function calcRow(db, profile, row) {
     statDmg: stat.dmg,
     dr: sums.dr,
     undeadBase: (isBow ? 0 : meleeUndead(weapon, profile)) + arrow.undead,
+    undeadMax: 0,
     undeadAvg: 0,
     weaponAcc: weapon.acc,
     buffAcc: sums.buffAcc + (isBow ? 0 : sums.meleeAcc),
     levelAcc: level.acc,
     statAcc: stat.acc,
   };
-  parts.undeadAvg = parts.undeadBase > 0 ? (parts.undeadBase + encStep + 1) / 2 : 0;
+  parts.undeadMax = parts.undeadBase > 0 ? parts.undeadBase + enchant : 0;
+  parts.undeadAvg = parts.undeadMax > 0 ? (parts.undeadMax + 1) / 2 : 0;
 
   const avgHit = hitDamage(parts, parts.diceSmall, 0);
   const avgLarge = hitDamage(parts, parts.diceLarge, 0);
@@ -1024,7 +1026,7 @@ function buildLines(result) {
   if (result.apsNote === '활만' || result.apsNote === '근거리만') lines.push(`공속 ${result.apsNote}. 이 무기는 이 클래스 DPS에 넣지 않습니다.`);
   else if (result.aps == null) lines.push('이 변신에는 이 무기 공속이 없습니다.');
   else lines.push(`작몹 DPS ${fmtNum(result.avgHit)} × ${result.hitRate.toFixed(1)}% × ${fmtAps(result.aps)} = ${result.dpsSmall.toFixed(1)}`);
-  if (p.undeadAvg > 0) lines.push(`언데드 주사위 최대 ${fmtNum(p.undeadBase)}+강화 ${fmtNum(p.encStep)} → 평균 ${fmtNum(p.undeadAvg)} 가산`);
+  if (p.undeadAvg > 0) lines.push(`언데드 주사위 1~${fmtNum(p.undeadMax)} (기본 ${fmtNum(p.undeadBase)} + 강화 ${fmtNum(result.enchant)}) → 평균 ${fmtNum(p.undeadAvg)} 가산`);
   else lines.push('언데드 추타 없음');
   lines.push(`큰몹 1타 ${fmtNum(result.avgLarge)} · 언데드 작 1타 ${fmtNum(result.avgUndeadSmall)} · 언데드 큰 1타 ${fmtNum(result.avgUndeadLarge)}`);
   return lines;
