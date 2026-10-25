@@ -33,19 +33,16 @@
     .tools { display: grid; gap: 12px; }
     .tool {
       display: block;
-      padding: 22px 22px;
+      padding: 0;
       border-radius: 16px;
-      border: 2px solid #ffe08a;
-      background: linear-gradient(180deg, #f3d56a 0%, #d4a93a 100%);
-      color: #1a1208;
-      text-align: center;
+      overflow: hidden;
       text-decoration: none;
-      font-size: 20px;
-      font-weight: 900;
-      letter-spacing: -0.02em;
-      box-shadow:
-        0 0 0 1px rgba(0, 0, 0, .35),
-        0 10px 28px rgba(243, 213, 106, .28);
+      box-shadow: 0 10px 28px rgba(0, 0, 0, .35);
+    }
+    .tool img {
+      display: block;
+      width: 100%;
+      height: auto;
     }
     .tool:hover { filter: brightness(1.06); transform: translateY(-1px); }
     .shortcuts {
@@ -176,7 +173,7 @@
         <a class="yt" href="https://www.youtube.com/user/linkstyle84" target="_blank" rel="noopener">도건유튜브 바로가기</a>
         <a class="yt" href="https://open.kakao.com/o/gL2Xyl9h" target="_blank" rel="noopener">도건 린클 연구소 단톡방 바로가기</a>
       </div>
-      <a class="tool" href="https://linkstyle84-sketch.github.io/lin-dps/">리니지 클래식 무기 DPS 측정기</a>
+      <a class="tool" href="https://linkstyle84-sketch.github.io/lin-dps/"><img src="dps-tool.jpg" alt="리니지 클래식 무기 DPS 측정기"></a>
     </div>
     <p class="ad-contact">
       <strong>배너 광고 문의</strong>
