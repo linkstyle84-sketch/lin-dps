@@ -126,8 +126,13 @@ main { min-width: 0; }
 .ghost.small, .add { font-size: 14px; padding: 6px 8px; }
 .ghost:hover, .add:hover, .seg button:hover, .tabs button:hover { border-color: var(--gold-2); color: var(--gold-2); }
 
-.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.grid2 { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 6px; }
+.grid2 > * { min-width: 0; }
 label.field { display: flex; flex-direction: column; gap: 3px; font-size: 14px; color: var(--text); margin-bottom: 6px; }
+label.field.inline { flex-direction: row; align-items: center; gap: 6px; margin-bottom: 4px; min-width: 0; }
+label.field.inline .field-name { display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; flex: none; }
+label.field.inline input { width: 0; flex: 1; min-width: 0; }
+.emo { font-family: "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif; font-size: 15px; line-height: 1; }
 label.field input, select.bare, select.cell {
   background: #101010;
   border: 1px solid var(--line-dim);
@@ -366,11 +371,11 @@ footer.note { margin-top: 8px; color: var(--muted); font-size: 14px; }
         </div>
         <div class="grid2">
           <div>
-            <label class="field">레벨<input id="level" type="number" min="1" max="99" step="1"></label>
+            <label class="field inline"><span class="field-name"><span class="emo" aria-hidden="true">⭐</span>레벨</span><input id="level" type="number" min="1" max="99" step="1"></label>
             <p class="substat" id="levelBonus">레벨 추타: +0</p>
           </div>
           <div>
-            <label class="field"><span id="statLabel">STR</span><input id="stat" type="number" min="1" max="50" step="1"></label>
+            <label class="field inline"><span class="field-name"><span class="emo" id="statEmoji" aria-hidden="true">💪</span><span id="statLabel">STR</span></span><input id="stat" type="number" min="1" max="50" step="1"></label>
             <p class="substat" id="statBonus">힘 추타: +0</p>
           </div>
         </div>
@@ -387,8 +392,8 @@ footer.note { margin-top: 8px; color: var(--muted); font-size: 14px; }
       <section class="block">
         <h2>피격자</h2>
         <div class="grid2">
-          <label class="field">AC<input id="ac" type="number" step="1"></label>
-          <label class="field">ER<input id="er" type="number" step="1"></label>
+          <label class="field inline"><span class="field-name"><span class="emo" aria-hidden="true">🛡️</span>AC</span><input id="ac" type="number" step="1"></label>
+          <label class="field inline"><span class="field-name"><span class="emo" aria-hidden="true">💨</span>ER</span><input id="er" type="number" step="1"></label>
         </div>
         <label class="field">리덕션<input id="extraDr" type="number" step="1"></label>
       </section>
@@ -930,6 +935,7 @@ function applyClassUi() {
   document.getElementById('btnElf').classList.toggle('on', state.cls === '요정');
   document.getElementById('btnKnight').classList.toggle('on', state.cls === '기사');
   document.getElementById('statLabel').textContent = state.cls === '기사' ? 'STR' : 'DEX';
+  document.getElementById('statEmoji').textContent = state.cls === '기사' ? '💪' : '🎯';
   renderBuffs();
 }
 
