@@ -82,7 +82,7 @@ header.top p { margin: 6px 0 0; color: var(--muted); font-size: 14px; }
 
 .layout {
   display: grid;
-  grid-template-columns: minmax(260px, 360px) minmax(0, 1fr);
+  grid-template-columns: minmax(300px, 400px) minmax(0, 1fr);
   gap: 14px;
   padding: 8px 16px 24px;
   align-items: start;
@@ -128,6 +128,9 @@ main { min-width: 0; }
 
 .grid2 { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 6px; }
 .grid2 > * { min-width: 0; }
+.vic-row { display: grid; grid-template-columns: minmax(0, 0.85fr) minmax(0, 0.85fr) minmax(0, 1.3fr); gap: 6px; }
+.vic-row > * { min-width: 0; }
+.vic-row label.field.inline { gap: 4px; margin-bottom: 0; }
 label.field { display: flex; flex-direction: column; gap: 3px; font-size: 14px; color: var(--text); margin-bottom: 6px; }
 label.field.inline { flex-direction: row; align-items: center; gap: 6px; margin-bottom: 4px; min-width: 0; }
 label.field.inline .field-name, .stat-col .field-name { display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; flex: none; }
@@ -144,6 +147,9 @@ label.field input, .stat-col input, select.bare, select.cell {
   width: 100%;
 }
 label.field input, .stat-col input { font-size: 16px; line-height: 1; }
+.vic-row label.field input { padding: 5px 4px; -moz-appearance: textfield; appearance: textfield; }
+.vic-row label.field input::-webkit-outer-spin-button,
+.vic-row label.field input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
 .hint { color: var(--muted); font-size: 14px; margin: -2px 0 6px; }
 .substat { margin: -4px 0 8px; font-size: 14px; color: var(--text); }
 .substat .num, .summary .num { font-size: 16px; line-height: 1; }
@@ -396,11 +402,11 @@ footer.note { margin-top: 8px; color: var(--muted); font-size: 14px; }
       </section>
       <section class="block">
         <h2>피격자</h2>
-        <div class="grid2">
+        <div class="vic-row">
           <label class="field inline"><span class="field-name"><span class="emo" aria-hidden="true">🛡️</span>AC</span><input id="ac" type="number" step="1"></label>
           <label class="field inline"><span class="field-name"><span class="emo" aria-hidden="true">💨</span>ER</span><input id="er" type="number" step="1"></label>
+          <label class="field inline"><span class="field-name"><span class="emo" aria-hidden="true">🧱</span>리덕션</span><input id="extraDr" type="number" step="1"></label>
         </div>
-        <label class="field">리덕션<input id="extraDr" type="number" step="1"></label>
       </section>
     </aside>
     <main>
