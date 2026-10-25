@@ -264,6 +264,15 @@ th, td { padding: 6px 7px; border-bottom: 1px solid #3a3120; white-space: nowrap
 th { position: sticky; top: 0; background: #241e14; color: var(--text); font-weight: 400; z-index: 1; }
 th button { background: none; border: 0; color: inherit; padding: 0; font-size: 14px; }
 th button.on { color: var(--gold-2); }
+th button.sort-clear {
+  margin-left: 6px;
+  border: 1px solid var(--line);
+  background: #16130e;
+  color: var(--text);
+  padding: 1px 6px;
+  font-size: 12px;
+}
+th button.sort-clear:hover { border-color: var(--gold-2); color: var(--gold-2); }
 .add-row td { text-align: center; border-bottom: 0; }
 .add-plus {
   width: 42px;
@@ -985,6 +994,7 @@ function computedRows() {
 }
 
 function sortedView(items) {
+  if (!state.sortKey) return items.slice();
   const filled = items.filter((item) => item.row.name);
   const empty = items.filter((item) => !item.row.name);
   const dir = state.sortDir === 'asc' ? 1 : -1;
@@ -1066,9 +1076,10 @@ function heroHtml(view) {
   const picked = view.find((item) => item.row.id === state.selectedId && item.row.name);
   const result = picked?.result;
   const label = sortLabel();
-  const undeadSort = state.sortKey === 'dpsUndeadSmall' || state.sortKey === 'dpsUndeadLarge';
+  const scoreKey = state.sortKey || 'dpsSmall';
+  const undeadSort = scoreKey === 'dpsUndeadSmall' || scoreKey === 'dpsUndeadLarge';
   const score = result && !result.missing && !result.empty
-    ? (undeadSort && !hasUndead(result) ? null : result[state.sortKey])
+    ? (undeadSort && !hasUndead(result) ? null : result[scoreKey])
     : null;
   const scoreText = result && !result.missing && !result.empty && undeadSort && !hasUndead(result)
     ? '-'
@@ -1234,11 +1245,20 @@ function renderTable(view) {
 }
 
 function renderSortHeads() {
+  document.getElementById('clearSort')?.remove();
   for (const btn of document.querySelectorAll('thead button[data-sort]')) {
-    const on = btn.dataset.sort === state.sortKey;
+    const on = !!state.sortKey && btn.dataset.sort === state.sortKey;
     btn.classList.toggle('on', on);
     const base = btn.dataset.label;
     btn.textContent = on ? `${base} ${state.sortDir === 'asc' ? '↑' : '↓'}` : base;
+    if (on) {
+      const clear = document.createElement('button');
+      clear.id = 'clearSort';
+      clear.type = 'button';
+      clear.className = 'sort-clear';
+      clear.textContent = '해제';
+      btn.after(clear);
+    }
   }
 }
 
@@ -1337,6 +1357,11 @@ function bind() {
     refresh();
   });
   document.querySelector('thead').addEventListener('click', (e) => {
+    if (e.target.closest('#clearSort')) {
+      state.sortKey = null;
+      refresh();
+      return;
+    }
     const btn = e.target.closest('button[data-sort]');
     if (!btn) return;
     if (state.sortKey === btn.dataset.sort) state.sortDir = state.sortDir === 'desc' ? 'asc' : 'desc';
