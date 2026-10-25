@@ -344,6 +344,64 @@ select.cell { max-width: none; color: var(--text); }
 select.enchant { width: 78px; color: var(--num); }
 select.weapon { width: 148px; }
 select.transform { width: 176px; }
+td.art-col, th.art-col { width: 40px; padding: 3px 4px; text-align: center; }
+.row-art, .menu-art {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  image-rendering: pixelated;
+  background: #101010;
+  border: 1px solid var(--line-dim);
+  display: block;
+  flex: none;
+}
+.menu-art { width: 28px; height: 28px; }
+span.row-art, span.menu-art { display: inline-block; }
+.wpick-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 176px;
+  position: relative;
+  background: #101010;
+  border: 1px solid var(--line-dim);
+  border-radius: 2px;
+  color: var(--text);
+  padding: 3px 22px 3px 4px;
+  text-align: left;
+}
+.wpick-btn span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.wpick-btn::after {
+  content: "";
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-top: 5px solid var(--gold-2);
+  transform: translateY(-30%);
+}
+.wpick-menu {
+  position: fixed;
+  z-index: 20;
+  overflow: auto;
+  background: #101010;
+  border: 1px solid var(--line);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.55);
+}
+.wgroup { padding: 8px 8px 2px; color: var(--gold); font-size: 13px; }
+.wopt {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  padding: 4px 8px;
+  text-align: left;
+}
+.wopt.on, .wopt:hover { background: #3a3016; color: var(--gold-2); }
 td .x { border: 0; background: transparent; color: var(--muted); padding: 2px 4px; }
 td .x:hover { color: var(--danger); }
 td.num.aps-bad { color: var(--danger); font-family: "LinText", sans-serif; }
@@ -415,6 +473,7 @@ footer.note { margin-top: 8px; color: var(--muted); font-size: 14px; }
           <thead>
             <tr>
               <th>순위</th>
+              <th class="art-col"></th>
               <th class="left">강화</th>
               <th class="left">무기</th>
               <th class="left">변신</th>
@@ -1136,10 +1195,14 @@ function totalScore(result) {
   return GAUGES.reduce((sum, [key]) => sum + (gaugeValue(result, key) || 0), 0);
 }
 
-function weaponThumb(name) {
+function weaponIcon(name, className) {
   const art = name && typeof WEAPON_IMG !== 'undefined' ? WEAPON_IMG[name] : '';
-  if (!art) return '<span class="cmp-thumb"></span>';
-  return `<img class="cmp-thumb" alt="" src="${art}">`;
+  if (!art) return `<span class="${className}"></span>`;
+  return `<img class="${className}" alt="" src="${art}">`;
+}
+
+function weaponThumb(name) {
+  return weaponIcon(name, 'cmp-thumb');
 }
 
 function barHtml(label, value, max) {
@@ -1265,25 +1328,61 @@ function selectHtml(className, value, options, extra) {
   return `<select class="cell ${className}">${head}${body}</select>`;
 }
 
-function renderTable(view) {
-  const body = document.getElementById('weaponBody');
-  const addRow = `<tr class="add-row"><td colspan="12"><button type="button" class="add-plus" data-add="1" aria-label="무기 추가">+</button></td></tr>`;
-  if (!state.rows.length) {
-    body.innerHTML = addRow;
-    return;
-  }
+function weaponMenu(selected) {
   const groups = new Map();
   for (const opt of DB.weaponOptions) {
     if (!groups.has(opt.type)) groups.set(opt.type, []);
     groups.get(opt.type).push(opt);
   }
-  const weaponOptions = [`<option value="">(선택)</option>`];
+  const items = [`<button type="button" class="wopt${selected ? '' : ' on'}" data-weapon=""><span>(선택)</span></button>`];
   for (const [type, list] of groups) {
-    weaponOptions.push(`<optgroup label="${esc(type)}">`);
-    for (const opt of list) weaponOptions.push(`<option value="${esc(opt.name)}">${esc(opt.name)}</option>`);
-    weaponOptions.push('</optgroup>');
+    items.push(`<div class="wgroup">${esc(type)}</div>`);
+    for (const opt of list) {
+      const on = opt.name === selected ? ' on' : '';
+      items.push(`<button type="button" class="wopt${on}" data-weapon="${esc(opt.name)}">${weaponIcon(opt.name, 'menu-art')}<span>${esc(opt.name)}</span></button>`);
+    }
   }
-  const weaponSelect = weaponOptions.join('');
+  const label = selected ? esc(selected) : '(선택)';
+  return `<div class="wpick"><button type="button" class="wpick-btn">${weaponIcon(selected, 'menu-art')}<span>${label}</span></button><div class="wpick-menu" hidden>${items.join('')}</div></div>`;
+}
+
+function chooseWeapon(row, name) {
+  row.name = name;
+  const opt = weaponOption(row.name);
+  if (opt && !opt.enchants.includes(Number(row.enchant))) {
+    row.enchant = opt.enchants.includes(9) ? 9 : opt.enchants[opt.enchants.length - 1];
+  }
+  state.selectedId = row.id;
+  refresh();
+}
+
+function closeWeaponMenus() {
+  for (const menu of document.querySelectorAll('.wpick-menu')) menu.hidden = true;
+}
+
+function openWeaponMenu(btn) {
+  const menu = btn.parentElement.querySelector('.wpick-menu');
+  const willOpen = menu.hidden;
+  closeWeaponMenus();
+  if (!willOpen) return;
+  const rect = btn.getBoundingClientRect();
+  const space = Math.max(160, window.innerHeight - rect.bottom - 12);
+  menu.style.left = `${Math.max(8, rect.left)}px`;
+  menu.style.top = `${rect.bottom + 2}px`;
+  menu.style.width = `${Math.max(rect.width, 220)}px`;
+  menu.style.maxHeight = `${Math.min(320, space)}px`;
+  menu.hidden = false;
+  const current = menu.querySelector('.wopt.on');
+  if (current) menu.scrollTop = Math.max(0, current.offsetTop - 36);
+}
+
+function renderTable(view) {
+  const body = document.getElementById('weaponBody');
+  const addRow = `<tr class="add-row"><td colspan="13"><button type="button" class="add-plus" data-add="1" aria-label="무기 추가">+</button></td></tr>`;
+  if (!state.rows.length) {
+    body.innerHTML = addRow;
+    return;
+  }
   const xfOptions = transformsFor(state.cls).map((t) => ({ value: t.name, label: t.name }));
   body.innerHTML = view.map((item, index) => {
     const row = item.row;
@@ -1305,8 +1404,9 @@ function renderTable(view) {
     const hitText = !row.name || !result || result.missing ? '—' : result.hitNote ? result.hitNote : `${result.hitRate.toFixed(1)}%`;
     return `<tr data-id="${row.id}" class="${state.selectedId === row.id ? 'pick' : ''}">
       <td>${rank}</td>
+      <td class="art-col">${weaponIcon(row.name, 'row-art')}</td>
       <td class="left">${enchantCell}</td>
-      <td class="left"><select class="cell weapon">${weaponSelect.replace(`value="${esc(row.name)}"`, `value="${esc(row.name)}" selected`)}</select></td>
+      <td class="left">${weaponMenu(row.name)}</td>
       <td class="left">${selectHtml('transform', row.transform, xfOptions, true)}</td>
       <td class="num ${apsClass}">${esc(apsText)}</td>
       <td class="num">${esc(hitText)}</td>
@@ -1318,11 +1418,6 @@ function renderTable(view) {
       <td><button type="button" class="x" data-del="${row.id}" aria-label="행 삭제">×</button></td>
     </tr>`;
   }).join('') + addRow;
-  for (const sel of body.querySelectorAll('select.weapon')) {
-    const tr = sel.closest('tr');
-    const row = state.rows.find((r) => r.id === Number(tr.dataset.id));
-    if (row) sel.value = row.name;
-  }
 }
 
 function renderSortHeads() {
@@ -1455,6 +1550,18 @@ function bind() {
     refresh();
   });
   document.getElementById('weaponBody').addEventListener('click', (e) => {
+    const opt = e.target.closest('.wopt');
+    if (opt) {
+      const tr = opt.closest('tr[data-id]');
+      const row = tr && state.rows.find((r) => r.id === Number(tr.dataset.id));
+      if (row) chooseWeapon(row, opt.dataset.weapon || '');
+      return;
+    }
+    const pick = e.target.closest('.wpick-btn');
+    if (pick) {
+      openWeaponMenu(pick);
+      return;
+    }
     if (e.target.closest('[data-add]')) {
       state.rows.push(rowFrom('', 9, transformForLevel(state.cls, state.level)));
       refresh();
@@ -1480,19 +1587,16 @@ function bind() {
     state.selectedId = Number(tr.dataset.id);
     refresh();
   });
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.wpick')) closeWeaponMenus();
+  });
+  document.querySelector('.table-wrap').addEventListener('scroll', closeWeaponMenus);
   document.getElementById('weaponBody').addEventListener('change', (e) => {
     const tr = e.target.closest('tr[data-id]');
     if (!tr) return;
     const row = state.rows.find((r) => r.id === Number(tr.dataset.id));
     if (!row) return;
     if (e.target.classList.contains('enchant')) row.enchant = Number(e.target.value);
-    if (e.target.classList.contains('weapon')) {
-      row.name = e.target.value;
-      const opt = weaponOption(row.name);
-      if (opt && !opt.enchants.includes(Number(row.enchant))) {
-        row.enchant = opt.enchants.includes(9) ? 9 : opt.enchants[opt.enchants.length - 1];
-      }
-    }
     if (e.target.classList.contains('transform')) row.transform = e.target.value;
     state.selectedId = row.id;
     refresh();
