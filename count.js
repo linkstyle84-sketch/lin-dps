@@ -7,15 +7,20 @@
     return 'https://abacus.jasoncameron.dev/' + kind + '/' + NS + '/' + key;
   }
   function hit(key, once) {
-    if (!live()) return;
+    if (!live()) return Promise.resolve(null);
     var mark = 'lin-dps-user-' + key;
     try {
-      if (once && localStorage.getItem(mark)) return;
+      if (once && localStorage.getItem(mark)) return read(key);
     } catch (e) {}
-    fetch(url('hit', key), { cache: 'no-store', keepalive: true }).then(function (res) {
-      if (!once || !res.ok) return;
-      try { localStorage.setItem(mark, '1'); } catch (e) {}
-    }).catch(function () {});
+    return fetch(url('hit', key), { cache: 'no-store', keepalive: true }).then(function (res) {
+      if (!res.ok) return null;
+      if (once) {
+        try { localStorage.setItem(mark, '1'); } catch (e) {}
+      }
+      return res.json().then(function (data) {
+        return typeof data.value === 'number' ? data.value : null;
+      });
+    }).catch(function () { return null; });
   }
   function read(key) {
     return fetch(url('get', key), { cache: 'no-store' }).then(function (res) {

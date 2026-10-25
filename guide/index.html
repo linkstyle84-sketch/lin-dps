@@ -91,6 +91,31 @@
     }
     .ad-contact a { color: inherit; text-decoration: none; }
     .ad-contact a:hover { color: #fffdf6; text-decoration: underline; }
+    .counts {
+      margin-top: 28px;
+      padding: 8px 18px 10px;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background: rgba(228, 195, 106, 0.06);
+    }
+    .counts p {
+      margin: 8px 0 2px;
+      text-align: center;
+      color: var(--gold);
+      font-size: 16px;
+      font-weight: 900;
+    }
+    .count-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      padding: 7px 0;
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 800;
+    }
+    .count-row b { color: var(--gold); font-size: 20px; font-weight: 900; }
   </style>
 </head>
 <body>
@@ -108,11 +133,25 @@
       카톡: linkstyle7<br>
       이메일: <a href="mailto:linkstyle84@gmail.com">linkstyle84@gmail.com</a>
     </p>
-    <p class="ad-contact"><a href="stats.html">이용 수 보기</a></p>
+    <div class="counts">
+      <p>이용 수</p>
+      <div class="count-row"><span>안내 페이지 방문</span><b id="guide">…</b></div>
+      <div class="count-row"><span>측정기 방문</span><b id="tool">…</b></div>
+      <div class="count-row"><span>측정기 버튼</span><b id="open">…</b></div>
+    </div>
   </div>
   <script src="../count.js"></script>
   <script>
-    LinCount.hit('guide', false);
+    function paintCount(key, n) {
+      document.getElementById(key).textContent = n == null ? '-' : String(n);
+    }
+    LinCount.hit('guide', false).then(function (n) {
+      if (n == null) LinCount.read('guide').then(function (v) { paintCount('guide', v); });
+      else paintCount('guide', n);
+    });
+    ['tool', 'open'].forEach(function (key) {
+      LinCount.read(key).then(function (n) { paintCount(key, n); });
+    });
     document.querySelector('.tool').addEventListener('click', function () {
       LinCount.hit('open', false);
     });
