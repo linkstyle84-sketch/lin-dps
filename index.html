@@ -132,6 +132,7 @@ label.field { display: flex; flex-direction: column; gap: 3px; font-size: 14px; 
 label.field.inline { flex-direction: row; align-items: center; gap: 6px; margin-bottom: 4px; min-width: 0; }
 label.field.inline .field-name, .stat-col .field-name { display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; flex: none; }
 label.field.inline input { width: 0; flex: 1; min-width: 0; }
+label.field.inline input::placeholder { color: #b7a98a; font-size: 12px; opacity: 1; }
 .emo { font-family: "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif; font-size: 15px; line-height: 1; }
 .stat-col { display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: 6px; row-gap: 3px; align-items: center; margin-bottom: 6px; }
 .stat-col .substat { grid-column: 2; margin: 0; }
@@ -384,7 +385,7 @@ footer.note { margin-top: 8px; color: var(--muted); font-size: 14px; }
           </div>
         </div>
         <div class="elf-only" id="arrows"></div>
-        <label class="field"><span class="field-title">추가 추타 <span class="field-note">(추가로 더 올리고싶은 추타 입력)</span></span><input id="extraDmg" type="number" step="1"></label>
+        <label class="field inline"><span class="field-name">추가 추타</span><input id="extraDmg" type="number" step="1" placeholder="추가로 더 올리고싶은 추타 입력"></label>
       </section>
       <section class="block">
         <div class="block-head">
@@ -929,7 +930,7 @@ function writeControls() {
   document.getElementById('stat').value = state.stat;
   document.getElementById('ac').value = state.ac;
   document.getElementById('er').value = state.er;
-  document.getElementById('extraDmg').value = state.extraDmg;
+  document.getElementById('extraDmg').value = state.extraDmg ? state.extraDmg : '';
   document.getElementById('extraDr').value = state.extraDr;
 }
 
