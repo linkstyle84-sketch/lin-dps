@@ -77,7 +77,9 @@ header.top {
   padding: 18px 20px 8px;
 }
 header.top h1 { margin: 0; font-size: 26px; font-weight: 400; letter-spacing: 0; color: var(--gold); }
-header.top p { margin: 6px 0 0; color: var(--muted); font-size: 14px; }
+.brand { flex: 1; min-width: 0; }
+.credit-row { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; flex-wrap: wrap; margin-top: 6px; }
+header.top p { margin: 0; color: var(--text); font-size: 14px; }
 .top-actions { display: flex; gap: 8px; flex-wrap: wrap; }
 
 .layout {
@@ -443,9 +445,12 @@ footer.note { margin-top: 8px; color: var(--muted); font-size: 14px; }
 </head>
 <body>
   <header class="top">
-    <div>
+    <div class="brand">
       <h1>리니지 클래식 DPS 측정기</h1>
-      <p>제작: 도건유튜브</p>
+      <div class="credit-row">
+        <p>제작: 도건 유튜브</p>
+        <p class="updated">업데이트 일시: 2026년 10월 26일 06:52 (버전: 2.83v)</p>
+      </div>
     </div>
     <div class="top-actions">
       <button type="button" class="ghost" id="openCompare">무기비교</button>
