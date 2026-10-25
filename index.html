@@ -105,7 +105,21 @@ main { min-width: 0; }
 .panel.left { position: sticky; top: 12px; max-height: calc(100vh - 24px); overflow: auto; }
 .panel.left h2, .right-head h2 { margin: 0 0 8px; font-size: 14px; letter-spacing: 0; color: var(--gold); }
 .block-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 8px; }
-.panel.left .block-head h2 { margin: 0; flex: none; }
+.panel.left .block-head h2 {
+  margin: 0;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+.panel.left .block-head h2::before,
+.panel.left .block-head h2::after {
+  content: "";
+  flex: 1;
+  height: 2px;
+  background: var(--gold);
+}
 .block-head .summary { margin: 0; padding: 4px 8px; white-space: nowrap; }
 .block + .block { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--line-dim); }
 
