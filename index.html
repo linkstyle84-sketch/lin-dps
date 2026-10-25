@@ -396,7 +396,7 @@ const WEAPON_IMG = {"고대의 검":"data:image/png;base64,iVBORw0KGgoAAAANSUhEU
 const ARROW_OPTIONS = [
   { id: 'none', label: '미착용', dice: 0, undead: 0 },
   { id: 'normal', label: '화살', dice: 6, undead: 0 },
-  { id: 'silver', label: '은 화살', dice: 7, undead: 0 },
+  { id: 'silver', label: '은 화살', dice: 7, undead: 10 },
   { id: 'mithril', label: '미스릴 화살', dice: 10, undead: 10 },
 ];
 
@@ -433,7 +433,7 @@ function chosenMaterial(weapon, profile) {
 
 function meleeUndead(weapon, profile) {
   const mat = chosenMaterial(weapon, profile);
-  if (mat === '미스릴' || mat === '오리하루콘') return weapon.undead > 0 ? weapon.undead : 10;
+  if (mat === '은' || mat === '미스릴' || mat === '오리하루콘') return weapon.undead > 0 ? weapon.undead : 10;
   if (mat) return 0;
   return weapon.undead;
 }
