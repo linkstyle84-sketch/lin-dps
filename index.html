@@ -358,7 +358,6 @@ footer.note { margin-top: 8px; color: var(--muted); font-size: 14px; }
         </div>
         <div id="buffs"></div>
       </section>
-      <section class="block knight-only" id="materialBox"></section>
       <section class="block">
         <h2>피격자</h2>
         <div class="grid2">
@@ -1324,7 +1323,7 @@ function bind() {
     state.arrow = id === 'none' || state.arrow === id ? 'none' : id;
     refresh();
   });
-  document.getElementById('materialBox').addEventListener('change', (e) => {
+  document.getElementById('materialBox')?.addEventListener('change', (e) => {
     const name = e.target.dataset.mat;
     if (!name) return;
     if (!state.materials) state.materials = {};
