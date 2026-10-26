@@ -408,14 +408,22 @@ th button.sort-clear:hover { border-color: var(--gold-2); color: var(--gold-2); 
 }
 .add-plus:hover { border-color: var(--gold-2); color: var(--gold-2); }
 td.left, th.left { text-align: center; }
-td.num { font-size: 18px; }
-th.stat, td.stat { text-align: center; width: 1%; padding-left: 5px; padding-right: 5px; }
+td.num, .stat-grid .num { font-size: 18px; }
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  align-items: center;
+  justify-items: center;
+  width: 100%;
+}
+th.stat-band, td.stat-band { width: 408px; padding-left: 0; padding-right: 0; text-align: center; }
+.aps-bad { color: var(--danger); font-family: "LinText", sans-serif; }
 td .ghost.small { font-size: 18px; }
 tr.pick { background: rgba(246, 226, 122, 0.12); }
 tr.pick .wpick-btn span { color: var(--gold-2); }
 tr:hover { background: rgba(243, 213, 107, 0.06); }
 select.cell { max-width: none; color: var(--text); }
-select.enchant { width: 86px; color: var(--num); font-size: 18px; }
+select.enchant { width: 78px; height: 58px; color: var(--num); font-size: 18px; padding: 0 4px; text-align: center; text-align-last: center; }
 select.weapon { width: 148px; }
 select.transform { width: 176px; }
 .menu-art {
@@ -563,7 +571,7 @@ p.setup-note { padding-left: 0; }
       <h1>리니지 클래식 DPS 측정기</h1>
       <div class="credit-row">
         <p>제작: <a class="channel" href="https://www.youtube.com/user/linkstyle84" target="_blank" rel="noopener">도건유튜브</a></p>
-        <p class="updated">업데이트 일시: 2026년 10월 27일 06:07 (버전: 3.03v)</p>
+        <p class="updated">업데이트 일시: 2026년 10월 27일 06:14 (버전: 3.04v)</p>
       </div>
     </div>
     <div class="top-actions">
@@ -621,12 +629,7 @@ p.setup-note { padding-left: 0; }
               <th class="left">강화</th>
               <th class="left grow">무기</th>
               <th class="left grow">변신</th>
-              <th class="stat">공속</th>
-              <th class="stat">명중률</th>
-              <th class="stat"><button type="button" data-sort="dpsSmall" data-label="작몹">작몹</button></th>
-              <th class="stat"><button type="button" data-sort="dpsLarge" data-label="큰몹">큰몹</button></th>
-              <th class="stat"><button type="button" data-sort="dpsUndeadSmall" data-label="언데드S">언데드S</button></th>
-              <th class="stat"><button type="button" data-sort="dpsUndeadLarge" data-label="언데드L">언데드L</button></th>
+              <th class="stat-band" colspan="6"><div class="stat-grid"><span>공속</span><span>명중률</span><button type="button" data-sort="dpsSmall" data-label="작몹">작몹</button><button type="button" data-sort="dpsLarge" data-label="큰몹">큰몹</button><button type="button" data-sort="dpsUndeadSmall" data-label="언데드S">언데드S</button><button type="button" data-sort="dpsUndeadLarge" data-label="언데드L">언데드L</button></div></th>
               <th id="sortClearHead"></th>
               <th></th>
             </tr>
@@ -1118,7 +1121,7 @@ function paintNums(text) {
 }
 
 function fmtAps(n) {
-  return (Math.round(n * 1000) / 1000).toFixed(3);
+  return (Math.round(n * 100) / 100).toFixed(2);
 }
 
 function intOr(value, fallback) {
@@ -1618,12 +1621,7 @@ function renderTable(view) {
       <td class="left">${enchantCell}</td>
       <td class="left grow">${weaponMenu(row.name)}</td>
       <td class="left grow">${transformMenu(row.transform)}</td>
-      <td class="num stat ${apsClass}">${esc(apsText)}</td>
-      <td class="num stat">${esc(hitText)}</td>
-      <td class="num stat">${cell('dpsSmall', 1)}</td>
-      <td class="num stat">${cell('dpsLarge', 1)}</td>
-      <td class="num stat">${cell('dpsUndeadSmall', 1)}</td>
-      <td class="num stat">${cell('dpsUndeadLarge', 1)}</td>
+      <td class="stat-band" colspan="6"><div class="stat-grid"><span class="num ${apsClass}">${esc(apsText)}</span><span class="num">${esc(hitText)}</span><span class="num">${cell('dpsSmall', 1)}</span><span class="num">${cell('dpsLarge', 1)}</span><span class="num">${cell('dpsUndeadSmall', 1)}</span><span class="num">${cell('dpsUndeadLarge', 1)}</span></div></td>
       <td><button type="button" class="ghost small" data-detail="${row.id}">상세보기</button></td>
       <td><button type="button" class="x" data-del="${row.id}" aria-label="행 삭제">×</button></td>
     </tr>`;
