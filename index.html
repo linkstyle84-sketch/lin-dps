@@ -115,7 +115,7 @@ header.top a.channel:hover { color: var(--gold-2); text-decoration: underline; }
 
 .layout {
   display: grid;
-  grid-template-columns: minmax(300px, 400px) minmax(0, 1fr);
+  grid-template-columns: minmax(280px, 348px) minmax(0, 1fr);
   gap: 14px;
   padding: 8px 16px 24px;
   align-items: start;
@@ -249,8 +249,7 @@ label.field input, .stat-col input, .atk-grid input { font-size: 16px; line-heig
 }
 .skill-btn svg, .skill-btn img { width: 32px; height: 32px; flex: none; image-rendering: pixelated; opacity: 0.45; }
 .skill-btn .skill-name { display: flex; flex-direction: column; justify-content: center; min-width: 0; font-size: 12px; line-height: 1.25; }
-.skill-btn .skill-name span { font-size: 12px; line-height: 1.25; }
-.skill-btn .skill-name.split span { white-space: nowrap; }
+.skill-btn .skill-name span { font-size: 12px; line-height: 1.25; white-space: nowrap; }
 .skill-btn.on {
   border-color: var(--gold);
   color: var(--gold-2);
@@ -558,7 +557,7 @@ p.setup-note { padding-left: 0; }
       <h1>리니지 클래식 DPS 측정기</h1>
       <div class="credit-row">
         <p>제작: <a class="channel" href="https://www.youtube.com/user/linkstyle84" target="_blank" rel="noopener">도건유튜브</a></p>
-        <p class="updated">업데이트 일시: 2026년 10월 27일 04:35 (버전: 2.93v)</p>
+        <p class="updated">업데이트 일시: 2026년 10월 27일 05:13 (버전: 2.94v)</p>
       </div>
     </div>
     <div class="top-actions">
@@ -1190,7 +1189,7 @@ function skillBtn(b, on, mode) {
   }
   const split = b.id === '브레스오브파이어';
   const name = split
-    ? '<span>브레스오브</span><span>파이어</span>'
+    ? '<span>브레스 오브</span><span>파이어</span>'
     : `<span>${esc(b.label)}</span>`;
   return `<button type="button" class="skill-btn${on ? ' on' : ''}" data-skill="${esc(b.id)}" data-mode="${mode}" aria-pressed="${on ? 'true' : 'false'}">${icon}<span class="skill-name${split ? ' split' : ''}">${name}</span></button>`;
 }
