@@ -285,7 +285,7 @@ body.class-elf .knight-only { display: none; }
 }
 .hero-top { display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; flex-wrap: wrap; }
 .hero-id { display: flex; gap: 10px; align-items: center; min-width: 0; }
-.weapon-art { width: 52px; height: 52px; object-fit: contain; image-rendering: pixelated; flex: none; background: #101010; border: 1px solid var(--line-dim); }
+.weapon-art { width: 64px; height: 64px; object-fit: none; image-rendering: auto; flex: none; background: #101010; border: 1px solid var(--line-dim); box-sizing: content-box; }
 .kicker { color: var(--text); font-size: 14px; letter-spacing: 0; }
 .hero h3 { margin: 4px 0; font-size: 26px; font-weight: 400; color: var(--gold); }
 .hero h3 .num { font-size: 26px; }
@@ -322,10 +322,11 @@ body.class-elf .knight-only { display: none; }
 .cmp-line { min-height: 78px; margin-bottom: 6px; }
 .cmp-weapon { margin: 0 0 18px; padding-bottom: 8px; border-bottom: 1px solid #3a3120; }
 .cmp-thumb {
-  width: 72px;
-  height: 72px;
-  object-fit: contain;
-  image-rendering: pixelated;
+  width: 64px;
+  height: 64px;
+  box-sizing: content-box;
+  object-fit: none;
+  image-rendering: auto;
   background: #101010;
   border: 1px solid var(--line);
 }
@@ -416,10 +417,11 @@ select.enchant { width: 78px; color: var(--num); }
 select.weapon { width: 148px; }
 select.transform { width: 176px; }
 .menu-art {
-  width: 48px;
-  height: 48px;
-  object-fit: contain;
-  image-rendering: pixelated;
+  width: 64px;
+  height: 64px;
+  box-sizing: content-box;
+  object-fit: none;
+  image-rendering: auto;
   background: #101010;
   border: 1px solid var(--line-dim);
   display: block;
@@ -430,7 +432,7 @@ span.menu-art { display: inline-block; }
   display: flex;
   align-items: center;
   gap: 6px;
-  width: 200px;
+  width: 220px;
   position: relative;
   background: #101010;
   border: 1px solid var(--line-dim);
@@ -440,7 +442,7 @@ span.menu-art { display: inline-block; }
   text-align: left;
 }
 .wpick-btn span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.wpick-btn.xf { width: 206px; }
+.wpick-btn.xf { width: 226px; }
 .wpick-btn::after {
   content: "";
   position: absolute;
@@ -557,7 +559,7 @@ p.setup-note { padding-left: 0; }
       <h1>리니지 클래식 DPS 측정기</h1>
       <div class="credit-row">
         <p>제작: <a class="channel" href="https://www.youtube.com/user/linkstyle84" target="_blank" rel="noopener">도건유튜브</a></p>
-        <p class="updated">업데이트 일시: 2026년 10월 27일 05:35 (버전: 2.98v)</p>
+        <p class="updated">업데이트 일시: 2026년 10월 27일 05:39 (버전: 2.99v)</p>
       </div>
     </div>
     <div class="top-actions">
