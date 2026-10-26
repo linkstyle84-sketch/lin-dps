@@ -516,50 +516,92 @@ footer.note { margin-top: 8px; color: var(--muted); font-size: 14px; }
   .layout { grid-template-columns: 1fr; }
   .panel.left { position: static; max-height: none; overflow: visible; }
   .table-wrap { max-height: 70vh; }
+  .setup-victim { grid-template-columns: 1fr; }
+  .setup-choice { grid-template-columns: 1fr; }
 }
 #openSetup { color: var(--gold-2); border-color: var(--gold); }
-.setup-card { width: min(760px, 100%); }
-.setup-progress { display: flex; gap: 6px; margin: 0 0 12px; }
+.setup-card { width: min(840px, 100%); padding: 18px 22px 20px; }
+.setup-heading { display: flex; align-items: baseline; gap: 12px; min-width: 0; }
+#setupLead { color: var(--gold); font-size: 22px; }
+#setupCount { margin: 0; color: var(--gold-2); font-size: 14px; }
+.setup-progress { display: flex; gap: 8px; margin: 4px 0 14px; }
 .setup-progress span {
-  width: 22px;
-  height: 22px;
+  width: 28px;
+  height: 28px;
   display: grid;
   place-items: center;
   border: 1px solid #6a4a16;
   color: #f4f4f4;
-  font-size: 12px;
+  font-size: 13px;
 }
+.setup-progress span.done { color: var(--gold); border-color: #8a6a32; background: #1c160e; }
 .setup-progress span.on { color: var(--gold-2); border-color: var(--gold); background: #2a2012; }
-#setupLead { color: var(--gold); }
-.setup-choice { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+#setupBody { min-height: 340px; }
+.setup-help { margin: 0 0 14px; color: #f4f4f4; font-size: 15px; line-height: 1.7; }
+.setup-live {
+  margin: 14px 0 0;
+  padding: 10px 12px;
+  border: 1px solid #6a4a16;
+  background: #120e0a;
+  color: #f4f4f4;
+  font-size: 15px;
+  line-height: 1.6;
+}
+.setup-choice { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .setup-choice button {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 12px;
+  min-height: 96px;
   border: 1px solid var(--line);
   background: #141414;
   color: #f4f4f4;
-  padding: 10px 0;
+  padding: 16px 0;
+  font-size: 20px;
 }
+.setup-choice .crest { width: 52px; height: 52px; }
 .setup-choice button.on { color: var(--gold-2); background: #2a2012; border-color: var(--gold); }
-.setup-field { display: flex; align-items: center; gap: 10px; margin: 8px 0; color: #f4f4f4; }
+.setup-field { display: flex; align-items: center; gap: 12px; margin: 0; color: #f4f4f4; font-size: 16px; }
 .setup-field input {
-  width: 72px;
+  width: 108px;
   text-align: center;
   background: #101010;
   border: 1px solid var(--line-dim);
   color: #fff;
-  font-size: 16px;
-  padding: 6px 4px;
+  font-size: 22px;
+  padding: 8px 6px;
 }
-.setup-victim { display: flex; flex-wrap: wrap; gap: 8px 16px; }
-.setup-note { color: #f4f4f4; line-height: 1.7; margin: 10px 0 0; padding-left: 18px; }
-p.setup-note { padding-left: 0; }
-.setup-shot { display: block; width: 100%; height: auto; border: 1px solid #6a4a16; margin-top: 4px; }
-.setup-nav { display: flex; justify-content: space-between; gap: 8px; margin-top: 16px; }
+.setup-victim { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.setup-victim .setup-field { flex-direction: column; align-items: stretch; gap: 6px; }
+.setup-victim .setup-field input { width: 100%; }
+.setup-steps { margin: 14px 0 0; padding: 0; list-style: none; }
+.setup-steps li {
+  display: grid;
+  grid-template-columns: 28px 1fr;
+  gap: 10px;
+  align-items: start;
+  margin: 0 0 10px;
+  color: #f4f4f4;
+  font-size: 15px;
+  line-height: 1.6;
+}
+.setup-steps b {
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--line);
+  color: var(--gold-2);
+  font-weight: 400;
+  font-size: 13px;
+}
+.setup-shot { display: block; width: min(100%, 720px); height: auto; margin: 0 auto; border: 1px solid #6a4a16; }
+.setup-nav { display: flex; justify-content: space-between; gap: 8px; margin-top: 18px; }
+.setup-nav button { min-width: 108px; padding: 8px 16px; font-size: 16px; }
 .setup-nav button:disabled { opacity: 0.35; }
-#setupBody .buff-mix { margin-top: 4px; }
+#setupNext { color: var(--gold-2); border-color: var(--gold); }
+#setupBody .buff-mix { margin-top: 0; }
 #setupBody h3 { margin: 12px 0 4px; color: var(--gold); font-size: 14px; font-weight: 400; }
 .panel.left::-webkit-scrollbar, .table-wrap::-webkit-scrollbar { width: 12px; height: 12px; }
 .panel.left::-webkit-scrollbar-track, .table-wrap::-webkit-scrollbar-track { background: #14110c; }
@@ -576,7 +618,7 @@ p.setup-note { padding-left: 0; }
       <h1>리니지 클래식 DPS 측정기</h1>
       <div class="credit-row">
         <p>제작: <a class="channel" href="https://www.youtube.com/user/linkstyle84" target="_blank" rel="noopener">도건유튜브</a></p>
-        <p class="updated">업데이트 일시: 2026년 10월 27일 06:24 (버전: 3.05v)</p>
+        <p class="updated">업데이트 일시: 2026년 10월 27일 06:29 (버전: 3.06v)</p>
       </div>
     </div>
     <div class="top-actions">
@@ -660,7 +702,10 @@ p.setup-note { padding-left: 0; }
     <div class="modal-back" data-setup-close="1"></div>
     <div class="modal-card setup-card" role="dialog" aria-modal="true" aria-labelledby="setupLead">
       <div class="modal-tools">
-        <h2 id="setupLead">처음 설정</h2>
+        <div class="setup-heading">
+          <h2 id="setupLead">처음 설정</h2>
+          <p id="setupCount">1 / 8</p>
+        </div>
         <button type="button" class="modal-x" data-setup-close="1" aria-label="닫기">×</button>
       </div>
       <div class="setup-progress" id="setupDots"></div>
@@ -1687,61 +1732,100 @@ function setupBuffHtml(list, mode) {
   }).join('')}</div>`;
 }
 
+function setupHelp(text) {
+  return `<p class="setup-help">${text}</p>`;
+}
+
+function setupSteps(items) {
+  return `<ol class="setup-steps">${items.map((text, i) => `<li><b>${i + 1}</b><span>${text}</span></li>`).join('')}</ol>`;
+}
+
 function renderSetup() {
   const step = setupStep;
-  const dots = SETUP_TITLES.map((_, i) => `<span class="${i === step ? 'on' : ''}">${i + 1}</span>`).join('');
+  const dots = SETUP_TITLES.map((_, i) => `<span class="${i === step ? 'on' : i < step ? 'done' : ''}">${i + 1}</span>`).join('');
   document.getElementById('setupDots').innerHTML = dots;
-  document.getElementById('setupLead').textContent = `${step + 1}. ${setupTitle(step)}`;
+  document.getElementById('setupLead').textContent = setupTitle(step);
+  document.getElementById('setupCount').textContent = `${step + 1} / ${SETUP_TITLES.length}`;
   const body = document.getElementById('setupBody');
   const { common, knight, elf, elfPick } = splitBuffs();
-  const growth = growthOf(DB, state.cls, state.level, state.stat);
   if (step === 0) {
-    body.innerHTML = `<div class="setup-choice">
+    body.innerHTML = `${setupHelp('기사와 요정은 무기와 버프가 다릅니다. 기사를 고르면 근거리 무기 목록이, 요정을 고르면 활 목록이 들어옵니다. 지금 선택된 클래스를 다시 눌러도 목록은 유지되고, 다른 클래스로 갔다가 돌아오면 그 클래스의 기본 무기로 다시 채워집니다.')}
+    <div class="setup-choice">
       <button type="button" class="${state.cls === '기사' ? 'on' : ''}" data-setup-class="기사"><img class="crest" alt="" src="${document.querySelector('#btnKnight .crest').src}">기사</button>
       <button type="button" class="${state.cls === '요정' ? 'on' : ''}" data-setup-class="요정"><img class="crest" alt="" src="${document.querySelector('#btnElf .crest').src}">요정</button>
-    </div>
-    <p class="setup-note">클래스를 바꾸면 그 클래스의 기본 무기 목록으로 바뀝니다.</p>`;
+    </div>`;
   } else if (step === 1) {
-    body.innerHTML = `<label class="setup-field" for="setupLevel">레벨 <input id="setupLevel" type="number" min="1" max="99" step="1" value="${state.level}"></label>
-      <p class="setup-note" id="setupLevelBonus">렙추타 ${fmtPlus(growth.levelDmg)} · 렙명중 ${fmtPlus(growth.levelAcc)}</p>`;
+    const form = state.cls === '기사' ? '기사는 근거리 무기에 렙추타가 붙고, 활에는 붙지 않습니다.' : '요정은 활에 렙추타가 붙고, 근거리 무기에는 붙지 않습니다.';
+    body.innerHTML = `${setupHelp(`레벨은 렙추타와 렙명중으로 들어갑니다. ${form} 렙명중은 무기 종류와 상관없이 명중에 더해집니다. 레벨을 바꾸면 표의 변신도 그 구간에 맞게 바뀝니다.`)}
+      <label class="setup-field" for="setupLevel">레벨 <input id="setupLevel" type="number" min="1" max="99" step="1" value="${state.level}"></label>
+      <p class="setup-live" id="setupLevelBonus"></p>`;
+    paintLevelNote();
   } else if (step === 2) {
     const name = state.cls === '기사' ? '힘' : '덱스';
-    body.innerHTML = `<label class="setup-field" for="setupStat">${name} <input id="setupStat" type="number" min="1" max="50" step="1" value="${state.stat}"></label>
-      <p class="setup-note" id="setupStatBonus">${name}추타 ${fmtPlus(growth.statDmg)} · ${name}명중 ${fmtPlus(growth.statAcc)}</p>`;
+    body.innerHTML = `${setupHelp(`${name}은 ${name}추타와 ${name}명중으로 모든 무기에 더해집니다. 1부터 50까지 넣을 수 있고, 숫자를 바꾸는 즉시 오른쪽 표가 다시 계산됩니다.`)}
+      <label class="setup-field" for="setupStat">${name} <input id="setupStat" type="number" min="1" max="50" step="1" value="${state.stat}"></label>
+      <p class="setup-live" id="setupStatBonus"></p>`;
+    paintStatNote();
   } else if (step === 3) {
     const classBuffs = state.cls === '기사' ? knight : elfPick;
     const mode = state.cls === '기사' ? 'check' : 'radio';
     const arrows = state.cls === '요정' ? arrowMixHtml() : '';
-    body.innerHTML = `${setupBuffHtml(classBuffs, mode)}${arrows}`;
+    const help = state.cls === '기사'
+      ? '기사 전용 버프입니다. 여러 개를 함께 켤 수 있고, 켜진 버튼을 다시 누르면 꺼집니다. 근거리 전용 버프는 활에는 들어가지 않습니다.'
+      : '요정 원거리 기술은 하나만 유지됩니다. 켜진 기술을 다시 누르면 해제됩니다. 화살은 활의 대미지에 더해지고, 은 화살과 미스릴 화살은 언데드 대미지도 있습니다. 화살 미착용은 화살 대미지가 없고, 사이하의 활만 미착용이어도 무형 화살을 씁니다.';
+    body.innerHTML = `${setupHelp(help)}${setupBuffHtml(classBuffs, mode)}${arrows}`;
   } else if (step === 4) {
     const list = state.cls === '기사' ? common : elfCommonBuffs(common, elf);
-    body.innerHTML = setupBuffHtml(list, 'check');
+    const help = state.cls === '기사'
+      ? '클래스 버프와 함께 켜는 공통 버프입니다. 필요한 것만 켜 두면 되고, 근거리 전용 버프는 활 DPS에 들어가지 않습니다.'
+      : '활과 근거리에 함께 들어가는 공통 버프입니다. 전투 강화 주문서, 인챈트 웨폰, 음식 명중, 음식 추타는 각각 따로 켭니다.';
+    body.innerHTML = `${setupHelp(help)}${setupBuffHtml(list, 'check')}`;
   } else if (step === 5) {
-    body.innerHTML = `<div class="setup-victim">
+    body.innerHTML = `${setupHelp('맞을 대상의 방어입니다. AC는 명중 표에서 맞힐 확률을 정합니다. 활은 그 확률에서 ER을 빼고, 최저 5%까지 내려갑니다. 근거리 무기는 ER을 보지 않습니다. 리덕션은 한 대 대미지에서 빠집니다.')}
+    <div class="setup-victim">
       <label class="setup-field" for="setupAc">AC <input id="setupAc" type="number" step="1" value="${state.ac}"></label>
       <label class="setup-field" for="setupEr">ER <input id="setupEr" type="number" step="1" value="${state.er}"></label>
       <label class="setup-field" for="setupDr">리덕션 <input id="setupDr" type="number" step="1" value="${state.extraDr}"></label>
-    </div>
-    <p class="setup-note">맞을 대상의 AC, ER, 리덕션을 넣습니다. 근거리 무기는 ER을 보지 않습니다.</p>`;
+    </div>`;
   } else if (step === 6) {
     body.innerHTML = `<img class="setup-shot" alt="강화, 무기, 변신 칸과 추가 버튼" src="${GUIDE_WEAPON}">
-      <ol class="setup-note">
-        <li>강화 칸에서 인챈트 수치를 고릅니다.</li>
-        <li>무기 칸을 눌러 무기를 고릅니다. 무기가 (선택)이면 대미지는 — 로 나옵니다.</li>
-        <li>변신은 레벨을 바꾸면 그 레벨에 맞게 바뀝니다. 칸을 눌러 직접 고를 수도 있습니다.</li>
-        <li>표 아래 + 로 줄을 추가하고, 줄 오른쪽 × 로 그 줄을 지웁니다.</li>
-      </ol>`;
+      ${setupSteps([
+        '강화 칸에서 인챈트 수치를 고릅니다. 강화가 오를수록 대미지와 명중이 오르고, 인챈트가 안 되는 무기는 불가로 나옵니다.',
+        '무기 칸을 눌러 무기를 고릅니다. (선택)인 줄은 대미지가 — 로 나옵니다.',
+        '은, 미스릴, 오리하루콘 무기는 언데드 대미지가 있습니다. 활의 언데드 대미지는 화살에서만 나옵니다.',
+        '변신은 레벨을 바꾸면 그 구간으로 바뀝니다. 칸을 눌러 직접 고를 수도 있습니다. 공속이 비어 있는 조합은 공속과 DPS가 — 입니다.',
+        '표 아래 + 로 줄을 추가하고, 줄 오른쪽 × 로 그 줄만 지웁니다.',
+      ])}`;
   } else {
     body.innerHTML = `<img class="setup-shot" alt="클래스, 레벨, 힘 입력" src="${GUIDE_DIRECT}">
-      <ol class="setup-note">
-        <li>이 창을 닫은 뒤에는 왼쪽에서 클래스, 레벨, 힘 또는 덱스를 바로 바꿀 수 있습니다.</li>
-        <li>버프와 피격자도 왼쪽에서 바로 켜고 끌 수 있습니다.</li>
-        <li>값을 바꾸면 오른쪽 대미지가 바로 다시 계산됩니다.</li>
-        <li>처음부터 다시 차례로 하려면 처음 설정 하기 버튼을 누릅니다.</li>
-      </ol>`;
+      ${setupSteps([
+        '이 창을 닫으면 왼쪽에서 클래스, 레벨, 힘 또는 덱스, 버프, 피격자를 바로 바꿀 수 있습니다. 바꾸는 즉시 오른쪽 표가 다시 계산됩니다.',
+        '위쪽 클래스 칸에서 다른 클래스를 누르면 그 클래스의 기본 무기 목록으로 바뀝니다. 이미 선택된 클래스를 다시 누르면 목록은 유지됩니다.',
+        '작몹, 큰몹, 언데드S, 언데드L 머리글을 누르면 그 수치로 정렬되고, 해제 버튼으로 원래 순서로 돌아옵니다.',
+        '상세보기는 그 무기의 계산을 펼치고, 무기비교는 고른 무기들을 한 화면에서 비교합니다.',
+        '목록 초기화는 무기 줄을 모두 지웁니다. 처음부터 다시 차례로 하려면 처음 설정 하기를 누릅니다.',
+      ])}`;
   }
   document.getElementById('setupPrev').disabled = step === 0;
   document.getElementById('setupNext').textContent = step === 7 ? '완료' : '다음';
+}
+
+function paintLevelNote() {
+  const note = document.getElementById('setupLevelBonus');
+  if (!note) return;
+  const growth = growthOf(DB, state.cls, state.level, state.stat);
+  const form = state.cls === '기사'
+    ? '50까지 샤르나, 51 커츠, 52부터 데스나이트, 55부터 다크나이트'
+    : '50까지 샤르나, 51 불타는 궁수, 52부터 다크엘프, 55부터 다크레인저';
+  note.innerHTML = paintNums(`렙추타 ${fmtPlus(growth.levelDmg)} · 렙명중 ${fmtPlus(growth.levelAcc)} · 변신 ${transformForLevel(state.cls, state.level)} (${form})`);
+}
+
+function paintStatNote() {
+  const note = document.getElementById('setupStatBonus');
+  if (!note) return;
+  const growth = growthOf(DB, state.cls, state.level, state.stat);
+  const name = state.cls === '기사' ? '힘' : '덱스';
+  note.innerHTML = paintNums(`${name}추타 ${fmtPlus(growth.statDmg)} · ${name}명중 ${fmtPlus(growth.statAcc)}`);
 }
 
 function openSetup() {
@@ -1875,17 +1959,14 @@ function bind() {
       applyLevelTransform();
       writeControls();
       refresh();
-      const growth = growthOf(DB, state.cls, state.level, state.stat);
       const note = document.getElementById('setupLevelBonus');
-      if (note) note.textContent = `렙추타 ${fmtPlus(growth.levelDmg)} · 렙명중 ${fmtPlus(growth.levelAcc)}`;
+      if (note) paintLevelNote();
     } else if (t.id === 'setupStat') {
       state.stat = Math.min(50, Math.max(1, intOr(t.value, 1)));
       writeControls();
       refresh();
-      const growth = growthOf(DB, state.cls, state.level, state.stat);
-      const name = state.cls === '기사' ? '힘' : '덱스';
       const note = document.getElementById('setupStatBonus');
-      if (note) note.textContent = `${name}추타 ${fmtPlus(growth.statDmg)} · ${name}명중 ${fmtPlus(growth.statAcc)}`;
+      if (note) paintStatNote();
     } else if (t.id === 'setupAc' || t.id === 'setupEr' || t.id === 'setupDr') {
       const key = t.id === 'setupAc' ? 'ac' : t.id === 'setupEr' ? 'er' : 'extraDr';
       state[key] = intOr(t.value, 0);
