@@ -157,14 +157,36 @@ label.field.inline input::placeholder { color: #b7a98a; font-size: 12px; opacity
 .emo { font-family: "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif; font-size: 15px; line-height: 1; }
 .stat-col { display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: 6px; row-gap: 3px; align-items: center; margin-bottom: 6px; }
 .stat-col .substat { grid-column: 2; margin: 0; }
-label.field input, .stat-col input, select.bare, select.cell {
+.atk-grid {
+  display: grid;
+  grid-template-columns: auto 58px minmax(0, 1fr);
+  column-gap: 8px;
+  row-gap: 6px;
+  align-items: center;
+  margin-bottom: 6px;
+}
+.atk-grid .field-name { display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; }
+.atk-bonus { display: flex; gap: 8px; margin: 0; font-size: 13px; line-height: 1.3; color: var(--text); white-space: nowrap; }
+.atk-bonus .num { font-size: 15px; line-height: 1; }
+label.field input, .stat-col input, .atk-grid input, select.bare, select.cell {
   background: #101010;
   border: 1px solid var(--line-dim);
   border-radius: 2px;
   padding: 5px 8px;
   width: 100%;
 }
-label.field input, .stat-col input { font-size: 16px; line-height: 1; }
+label.field input, .stat-col input, .atk-grid input { font-size: 16px; line-height: 1; }
+.atk-grid input {
+  width: 58px;
+  min-width: 0;
+  padding: 5px 4px;
+  text-align: center;
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+.atk-grid input::-webkit-outer-spin-button,
+.atk-grid input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.atk-grid input::placeholder { color: #b7a98a; font-size: 12px; opacity: 1; }
 .vic-row label.field input { padding: 5px 4px; -moz-appearance: textfield; appearance: textfield; }
 .vic-row label.field input::-webkit-outer-spin-button,
 .vic-row label.field input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
@@ -451,7 +473,7 @@ footer.note { margin-top: 8px; color: var(--muted); font-size: 14px; }
       <h1>리니지 클래식 DPS 측정기</h1>
       <div class="credit-row">
         <p>제작: <a class="channel" href="https://www.youtube.com/user/linkstyle84" target="_blank" rel="noopener">도건유튜브</a></p>
-        <p class="updated">업데이트 일시: 2026년 10월 26일 23:55 (버전: 2.87v)</p>
+        <p class="updated">업데이트 일시: 2026년 10월 27일 03:36 (버전: 2.88v)</p>
       </div>
     </div>
     <div class="top-actions">
@@ -470,20 +492,18 @@ footer.note { margin-top: 8px; color: var(--muted); font-size: 14px; }
           <h2>타격자</h2>
           <div class="summary" id="baseSummary"></div>
         </div>
-        <div class="grid2">
-          <div class="stat-col">
-            <label class="field-name" for="level"><span class="emo" aria-hidden="true">⭐</span>레벨</label>
-            <input id="level" type="number" min="1" max="99" step="1">
-            <p class="substat" id="levelBonus">레벨 추타: +0</p>
-          </div>
-          <div class="stat-col">
-            <label class="field-name" for="stat"><span class="emo" id="statEmoji" aria-hidden="true">💪</span><span id="statLabel">STR</span></label>
-            <input id="stat" type="number" min="1" max="50" step="1">
-            <p class="substat" id="statBonus">힘 추타: +0</p>
-          </div>
+        <div class="atk-grid">
+          <label class="field-name" for="level"><span class="emo" aria-hidden="true">⭐</span>레벨</label>
+          <input id="level" type="number" min="1" max="99" step="1">
+          <p class="atk-bonus" id="levelBonus">렙추타 +0 렙명중 +0</p>
+          <label class="field-name" for="stat"><span class="emo" id="statEmoji" aria-hidden="true">💪</span><span id="statLabel">STR</span></label>
+          <input id="stat" type="number" min="1" max="50" step="1">
+          <p class="atk-bonus" id="statBonus">힘추타 +0 힘명중 +0</p>
+          <label class="field-name" for="extraDmg">추가 추타</label>
+          <input id="extraDmg" type="number" step="1" placeholder="추타">
+          <span></span>
         </div>
         <div class="elf-only" id="arrows"></div>
-        <label class="field inline"><span class="field-name">추가 추타</span><input id="extraDmg" type="number" step="1" placeholder="추가로 더 올리고싶은 추타 입력"></label>
       </section>
       <section class="block">
         <div class="block-head">
@@ -1500,8 +1520,10 @@ function refresh() {
   const sums = summarize(DB, profile());
   const growth = growthOf(DB, state.cls, state.level, state.stat);
   const extra = Number(state.extraDmg) || 0;
-  document.getElementById('levelBonus').innerHTML = paintNums(`레벨 추타: ${fmtPlus(growth.levelDmg)}`);
-  document.getElementById('statBonus').innerHTML = paintNums(`${state.cls === '기사' ? '힘' : '덱스'} 추타: ${fmtPlus(growth.statDmg)}`);
+  const statName = state.cls === '기사' ? '힘' : '덱스';
+  const pair = (a, b) => `<span>${paintNums(a)}</span><span>${paintNums(b)}</span>`;
+  document.getElementById('levelBonus').innerHTML = pair(`렙추타 ${fmtPlus(growth.levelDmg)}`, `렙명중 ${fmtPlus(growth.levelAcc)}`);
+  document.getElementById('statBonus').innerHTML = pair(`${statName}추타 ${fmtPlus(growth.statDmg)}`, `${statName}명중 ${fmtPlus(growth.statAcc)}`);
   document.getElementById('baseSummary').innerHTML = paintNums(`추타 ${fmtNum(growth.levelDmg + growth.statDmg + extra)} · 명중 ${fmtNum(growth.levelAcc + growth.statAcc)}`);
   document.getElementById('atkSummary').innerHTML = paintNums(`추타 ${fmtNum(sums.buffDmg - extra + sums.meleeDmg)} · 명중 ${fmtNum(sums.buffAcc + sums.meleeAcc)}`);
   renderArrows();
