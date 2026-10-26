@@ -367,8 +367,10 @@ span.cmp-thumb { display: block; }
 .modal-x:hover { color: var(--gold-2); }
 body.modal-open { overflow: hidden; }
 
-.table-wrap { overflow: auto; max-height: calc(100vh - 110px); max-width: 100%; }
-table { width: max-content; border-collapse: collapse; font-size: 14px; }
+.table-wrap { overflow: auto; max-height: calc(100vh - 110px); width: 100%; max-width: 100%; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+th.grow, td.grow { width: 22%; }
+.wpick { width: 100%; }
 th, td { padding: 6px 7px; border-bottom: 1px solid #3a3120; white-space: nowrap; text-align: right; }
 th { position: sticky; top: 0; background: #120e0a; color: var(--gold); font-weight: 400; z-index: 1; }
 th button { background: none; border: 0; color: inherit; padding: 0; font-size: 14px; }
@@ -430,7 +432,8 @@ span.menu-art { display: inline-block; }
   display: flex;
   align-items: center;
   gap: 6px;
-  width: 176px;
+  width: 100%;
+  min-width: 148px;
   position: relative;
   background: #101010;
   border: 1px solid var(--line-dim);
@@ -440,7 +443,7 @@ span.menu-art { display: inline-block; }
   text-align: left;
 }
 .wpick-btn span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.wpick-btn.xf { width: 208px; }
+.wpick-btn.xf { min-width: 168px; }
 .wpick-btn::after {
   content: "";
   position: absolute;
@@ -557,7 +560,7 @@ p.setup-note { padding-left: 0; }
       <h1>리니지 클래식 DPS 측정기</h1>
       <div class="credit-row">
         <p>제작: <a class="channel" href="https://www.youtube.com/user/linkstyle84" target="_blank" rel="noopener">도건유튜브</a></p>
-        <p class="updated">업데이트 일시: 2026년 10월 27일 05:13 (버전: 2.94v)</p>
+        <p class="updated">업데이트 일시: 2026년 10월 27일 05:20 (버전: 2.95v)</p>
       </div>
     </div>
     <div class="top-actions">
@@ -613,8 +616,8 @@ p.setup-note { padding-left: 0; }
             <tr>
               <th>순위</th>
               <th class="left">강화</th>
-              <th class="left">무기</th>
-              <th class="left">변신</th>
+              <th class="left grow">무기</th>
+              <th class="left grow">변신</th>
               <th>공속</th>
               <th>명중률</th>
               <th><button type="button" data-sort="dpsSmall" data-label="작몹">작몹</button></th>
@@ -1610,8 +1613,8 @@ function renderTable(view) {
     return `<tr data-id="${row.id}" class="${state.selectedId === row.id ? 'pick' : ''}">
       <td>${rank}</td>
       <td class="left">${enchantCell}</td>
-      <td class="left">${weaponMenu(row.name)}</td>
-      <td class="left">${transformMenu(row.transform)}</td>
+      <td class="left grow">${weaponMenu(row.name)}</td>
+      <td class="left grow">${transformMenu(row.transform)}</td>
       <td class="num ${apsClass}">${esc(apsText)}</td>
       <td class="num">${esc(hitText)}</td>
       <td class="num">${cell('dpsSmall', 1)}</td>
