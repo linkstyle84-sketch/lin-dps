@@ -369,10 +369,10 @@ span.cmp-thumb { display: block; }
 body.modal-open { overflow: hidden; }
 
 .table-wrap { overflow: auto; max-height: calc(100vh - 110px); width: 100%; max-width: 100%; }
-table { width: 100%; border-collapse: collapse; font-size: 14px; }
-th, td { padding: 6px 7px; border-bottom: 1px solid #3a3120; white-space: nowrap; text-align: right; }
+table { width: 100%; border-collapse: collapse; font-size: 18px; }
+th, td { padding: 6px 3px; border-bottom: 1px solid #3a3120; white-space: nowrap; text-align: right; }
 th { position: sticky; top: 0; background: #120e0a; color: var(--gold); font-weight: 400; z-index: 1; }
-th button { background: none; border: 0; color: inherit; padding: 0; font-size: 14px; }
+th button { background: none; border: 0; color: inherit; padding: 0; font-size: 18px; }
 th button[data-sort] { position: relative; }
 th button.on { color: var(--gold-2); }
 th button.on::after {
@@ -380,7 +380,7 @@ th button.on::after {
   position: absolute;
   right: 0;
   top: -9px;
-  font-size: 11px;
+  font-size: 14px;
   line-height: 1;
   color: var(--gold-2);
 }
@@ -391,7 +391,7 @@ th button.sort-clear {
   background: #16130e;
   color: var(--text);
   padding: 1px 6px;
-  font-size: 12px;
+  font-size: 16px;
 }
 th button.sort-clear:hover { border-color: var(--gold-2); color: var(--gold-2); }
 .no-enchant { color: var(--muted); }
@@ -408,12 +408,13 @@ th button.sort-clear:hover { border-color: var(--gold-2); color: var(--gold-2); 
 }
 .add-plus:hover { border-color: var(--gold-2); color: var(--gold-2); }
 td.left, th.left { text-align: center; }
-td.num { font-size: 14px; }
+td.num { font-size: 18px; }
+td .ghost.small { font-size: 18px; }
 tr.pick { background: rgba(246, 226, 122, 0.12); }
 tr.pick .wpick-btn span { color: var(--gold-2); }
 tr:hover { background: rgba(243, 213, 107, 0.06); }
 select.cell { max-width: none; color: var(--text); }
-select.enchant { width: 78px; color: var(--num); }
+select.enchant { width: 86px; color: var(--num); font-size: 18px; }
 select.weapon { width: 148px; }
 select.transform { width: 176px; }
 .menu-art {
@@ -432,17 +433,18 @@ span.menu-art { display: inline-block; }
   display: flex;
   align-items: center;
   gap: 6px;
-  width: 204px;
+  width: 250px;
   position: relative;
   background: #101010;
   border: 1px solid var(--line-dim);
   border-radius: 2px;
   color: var(--text);
+  font-size: 18px;
   padding: 3px 22px 3px 4px;
   text-align: left;
 }
 .wpick-btn span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.wpick-btn.xf { width: 210px; }
+.wpick-btn.xf { width: 260px; }
 .wpick-btn::after {
   content: "";
   position: absolute;
@@ -467,7 +469,7 @@ span.menu-art { display: inline-block; }
   gap: 8px;
   margin: 8px 8px 2px;
   color: var(--gold-2);
-  font-size: 13px;
+  font-size: 16px;
   letter-spacing: 0;
 }
 .wgroup::before, .wgroup::after {
@@ -485,10 +487,11 @@ span.menu-art { display: inline-block; }
   background: transparent;
   color: var(--text);
   padding: 4px 8px;
+  font-size: 18px;
   text-align: left;
 }
 .wopt.on, .wopt:hover { background: #3a3016; color: var(--gold-2); }
-td .x { border: 0; background: transparent; color: var(--muted); padding: 2px 4px; }
+td .x { border: 0; background: transparent; color: var(--muted); padding: 2px 4px; font-size: 22px; }
 td .x:hover { color: var(--danger); }
 td.num.aps-bad { color: var(--danger); font-family: "LinText", sans-serif; }
 .empty { padding: 28px 8px; color: var(--muted); text-align: center; }
@@ -559,7 +562,7 @@ p.setup-note { padding-left: 0; }
       <h1>리니지 클래식 DPS 측정기</h1>
       <div class="credit-row">
         <p>제작: <a class="channel" href="https://www.youtube.com/user/linkstyle84" target="_blank" rel="noopener">도건유튜브</a></p>
-        <p class="updated">업데이트 일시: 2026년 10월 27일 05:44 (버전: 3.00v)</p>
+        <p class="updated">업데이트 일시: 2026년 10월 27일 05:48 (버전: 3.01v)</p>
       </div>
     </div>
     <div class="top-actions">
