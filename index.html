@@ -523,6 +523,33 @@ span.menu-art { display: inline-block; }
   border: 1px solid var(--line);
   box-shadow: 0 12px 28px rgba(0, 0, 0, 0.55);
 }
+.wpick-menu.arms {
+  display: flex;
+  overflow: hidden;
+  width: 440px;
+  padding: 0;
+}
+.wpick-menu.arms[hidden] { display: none; }
+.wcat {
+  width: 112px;
+  flex: none;
+  min-height: 0;
+  overflow: auto;
+  border-right: 1px solid var(--line);
+  background: #0c0c0c;
+}
+.wcat-btn {
+  display: block;
+  width: 100%;
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  padding: 12px 10px;
+  font-size: 16px;
+  text-align: left;
+}
+.wcat-btn.on, .wcat-btn:hover { background: #3a3016; color: var(--gold-2); }
+.wlist { flex: 1; min-width: 0; min-height: 0; overflow: auto; }
 .wgroup {
   display: flex;
   align-items: center;
@@ -691,7 +718,7 @@ footer.note { margin-top: 8px; color: var(--muted); font-size: 14px; }
       <h1>리니지 클래식 DPS 측정기</h1>
       <div class="credit-row">
         <p>제작: <a class="channel" href="https://www.youtube.com/user/linkstyle84" target="_blank" rel="noopener">도건유튜브</a></p>
-        <p class="updated">업데이트 일시: 2026년 10월 28일 11:10 (버전: 3.24v)</p>
+        <p class="updated">업데이트 일시: 2026년 10월 28일 18:58 (버전: 3.25v)</p>
       </div>
     </div>
     <div class="top-actions">
@@ -1755,16 +1782,23 @@ function weaponMenu(selected) {
     if (!groups.has(opt.type)) groups.set(opt.type, []);
     groups.get(opt.type).push(opt);
   }
+  let active = '';
+  for (const [type, list] of groups) {
+    if (list.some((opt) => opt.name === selected)) active = type;
+  }
+  if (!active) active = groups.keys().next().value || '';
+  const cats = [];
   const items = [`<button type="button" class="wopt${selected ? '' : ' on'}" data-weapon=""><span>(선택)</span></button>`];
   for (const [type, list] of groups) {
-    items.push(`<div class="wgroup">${esc(type)}</div>`);
+    cats.push(`<button type="button" class="wcat-btn${type === active ? ' on' : ''}" data-wcat="${esc(type)}">${esc(type)}</button>`);
     for (const opt of list) {
       const on = opt.name === selected ? ' on' : '';
-      items.push(`<button type="button" class="wopt${on}" data-weapon="${esc(opt.name)}">${weaponIcon(opt.name, 'menu-art')}<span>${esc(opt.name)}</span></button>`);
+      const hidden = type === active ? '' : ' hidden';
+      items.push(`<button type="button" class="wopt${on}" data-weapon="${esc(opt.name)}" data-type="${esc(type)}"${hidden}>${weaponIcon(opt.name, 'menu-art')}<span>${esc(opt.name)}</span></button>`);
     }
   }
   const label = selected ? esc(selected) : '(선택)';
-  return `<div class="wpick"><button type="button" class="wpick-btn">${weaponIcon(selected, 'menu-art')}<span>${label}</span></button><div class="wpick-menu" hidden>${items.join('')}</div></div>`;
+  return `<div class="wpick"><button type="button" class="wpick-btn">${weaponIcon(selected, 'menu-art')}<span>${label}</span></button><div class="wpick-menu arms" hidden><div class="wcat">${cats.join('')}</div><div class="wlist">${items.join('')}</div></div></div>`;
 }
 
 function transformIcon(name) {
@@ -1805,6 +1839,19 @@ function closeWeaponMenus() {
   for (const menu of document.querySelectorAll('.wpick-menu')) menu.hidden = true;
 }
 
+function showWeaponCat(menu, type) {
+  if (!menu || !type) return;
+  for (const btn of menu.querySelectorAll('[data-wcat]')) {
+    btn.classList.toggle('on', btn.dataset.wcat === type);
+  }
+  for (const opt of menu.querySelectorAll('.wopt[data-type]')) {
+    opt.hidden = opt.dataset.type !== type;
+  }
+  const list = menu.querySelector('.wlist');
+  const current = list?.querySelector('.wopt.on:not([hidden])');
+  if (list && current) list.scrollTop = Math.max(0, current.offsetTop - 8);
+}
+
 function openWeaponMenu(btn) {
   const menu = btn.parentElement.querySelector('.wpick-menu');
   const willOpen = menu.hidden;
@@ -1814,19 +1861,26 @@ function openWeaponMenu(btn) {
   const margin = 8;
   const below = Math.max(0, window.innerHeight - rect.bottom - margin);
   const above = Math.max(0, rect.top - margin);
-  const openUp = below < 180 && above > below;
-  const space = Math.max(80, Math.min(320, openUp ? above : below));
-  menu.style.width = `${Math.max(rect.width, 220)}px`;
+  const arms = menu.classList.contains('arms');
+  const openUp = below < (arms ? 280 : 180) && above > below;
+  const space = Math.max(arms ? 220 : 80, Math.min(arms ? 440 : 320, openUp ? above : below));
+  menu.style.width = arms ? '440px' : `${Math.max(rect.width, 220)}px`;
   menu.style.maxHeight = `${space}px`;
+  menu.style.height = arms ? `${space}px` : '';
   menu.hidden = false;
-  const height = Math.min(menu.scrollHeight, space);
+  if (arms) {
+    const current = menu.querySelector('.wopt.on[data-type]');
+    showWeaponCat(menu, current?.dataset.type || menu.querySelector('[data-wcat]')?.dataset.wcat || '');
+  }
+  const height = arms ? space : Math.min(menu.scrollHeight, space);
   const width = menu.offsetWidth;
   const left = Math.max(margin, Math.min(rect.left, window.innerWidth - width - margin));
   const top = openUp ? rect.top - height - 2 : rect.bottom + 2;
   menu.style.left = `${left}px`;
   menu.style.top = `${Math.max(margin, Math.min(top, window.innerHeight - height - margin))}px`;
-  const current = menu.querySelector('.wopt.on');
-  if (current) menu.scrollTop = Math.max(0, current.offsetTop - 36);
+  const current = arms ? menu.querySelector('.wlist .wopt.on:not([hidden])') : menu.querySelector('.wopt.on');
+  const scroller = arms ? menu.querySelector('.wlist') : menu;
+  if (current && scroller) scroller.scrollTop = Math.max(0, current.offsetTop - 36);
 }
 
 function renderTable(view) {
@@ -2003,7 +2057,7 @@ function renderSetup() {
     body.innerHTML = `<img class="setup-shot" alt="강화, 무기, 변신 칸과 추가 버튼" src="${GUIDE_WEAPON}">
       ${setupSteps([
         '강화 칸에서 인챈트 수치를 고릅니다. 강화가 오를수록 대미지와 명중이 오르고, 인챈트가 안 되는 무기는 불가로 나옵니다.',
-        '무기 칸을 눌러 무기를 고릅니다. (선택)인 줄은 대미지가 — 로 나옵니다.',
+        '무기 칸을 누르면 왼쪽에서 종류를 고르고, 오른쪽에는 그 종류 무기만 나옵니다. (선택)인 줄은 대미지가 — 로 나옵니다.',
         '은, 미스릴, 오리하루콘 무기는 언데드 대미지가 있습니다. 활의 언데드 대미지는 화살에서만 나옵니다.',
         '변신은 레벨을 바꾸면 그 구간으로 바뀝니다. 칸을 눌러 직접 고를 수도 있습니다. 공속이 비어 있는 조합은 공속과 DPS가 — 입니다.',
         '표 아래 + 로 줄을 추가하고, 줄 오른쪽 × 로 그 줄만 지웁니다.',
@@ -2260,6 +2314,11 @@ function bind() {
     refresh();
   });
   document.getElementById('weaponBody').addEventListener('click', (e) => {
+    const cat = e.target.closest('[data-wcat]');
+    if (cat) {
+      showWeaponCat(cat.closest('.wpick-menu'), cat.dataset.wcat);
+      return;
+    }
     const opt = e.target.closest('.wopt');
     if (opt) {
       const tr = opt.closest('tr[data-id]');
