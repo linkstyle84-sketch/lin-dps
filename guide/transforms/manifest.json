@@ -382,5 +382,12 @@
     "file": "실버랜서.png",
     "bytes": 32918,
     "status": 200
+  },
+  {
+    "name": "불타는 궁수",
+    "file": "불타는 궁수.png",
+    "bytes": 6255,
+    "status": 200,
+    "source": "monster:593"
   }
 ]
