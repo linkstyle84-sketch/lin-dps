@@ -50,31 +50,17 @@
       grid-template-columns: 1fr 1fr;
       gap: 12px;
     }
-    .speeds { grid-template-columns: 1fr 1fr 1fr; }
-    .speeds .yt {
-      flex-direction: column;
-      gap: 8px;
-      min-height: 0;
-      padding: 10px 8px 12px;
-      font-size: 14px;
-    }
-    .faces {
-      display: flex;
-      justify-content: center;
-      gap: 6px;
-      width: 100%;
-      height: 78px;
-    }
-    .faces img {
-      flex: 1 1 0;
-      width: 0;
-      max-width: 108px;
-      height: 100%;
-      object-fit: cover;
-      object-position: center;
-      border-radius: 8px;
+    .speed-banners { display: grid; gap: 12px; }
+    .speed-banner {
       display: block;
+      padding: 0;
+      border-radius: 12px;
+      overflow: hidden;
+      text-decoration: none;
+      box-shadow: 0 10px 28px rgba(0, 0, 0, .35);
     }
+    .speed-banner img { display: block; width: 100%; height: auto; }
+    .speed-banner:hover { filter: brightness(1.06); transform: translateY(-1px); }
     .yt {
       display: flex;
       align-items: center;
@@ -179,7 +165,6 @@
       .banner-row { grid-template-columns: 1fr; }
       .banner-row img { height: auto; }
       .member-cta { padding: 12px 10px; border-left: 0; border-top: 2px solid #2a160e; }
-      .speeds { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -199,26 +184,10 @@
         <a class="yt" href="https://www.youtube.com/user/linkstyle84" target="_blank" rel="noopener">도건유튜브 바로가기</a>
         <a class="yt" href="https://open.kakao.com/o/gL2Xyl9h" target="_blank" rel="noopener">도건 린클 연구소 단톡방 바로가기</a>
       </div>
-      <div class="shortcuts speeds">
-        <a class="yt" href="speed-knight.html">
-          <span class="faces">
-            <img src="class-prince.jpg" alt="군주">
-            <img src="class-knight.jpg" alt="기사">
-          </span>
-          <span>기사/군주 공격속도</span>
-        </a>
-        <a class="yt" href="speed-elf.html">
-          <span class="faces">
-            <img src="class-elf.jpg" alt="요정">
-          </span>
-          <span>요정 공격속도</span>
-        </a>
-        <a class="yt" href="speed-mage.html">
-          <span class="faces">
-            <img src="class-mage.jpg" alt="마법사">
-          </span>
-          <span>법사 공격속도</span>
-        </a>
+      <div class="speed-banners">
+        <a class="speed-banner" href="speed-knight.html"><img src="btn-knight.jpg" alt="기사/군주 공격속도"></a>
+        <a class="speed-banner" href="speed-elf.html"><img src="btn-elf.jpg" alt="요정 공격속도"></a>
+        <a class="speed-banner" href="speed-mage.html"><img src="btn-mage.jpg" alt="법사 공격속도"></a>
       </div>
       <a class="tool" href="https://linkstyle84-sketch.github.io/lin-dps/"><img src="dps-tool.jpg" alt="리니지 클래식 무기 DPS 측정기"></a>
     </div>
