@@ -51,7 +51,30 @@
       gap: 12px;
     }
     .speeds { grid-template-columns: 1fr 1fr 1fr; }
-    .speeds .yt { font-size: 15px; padding: 14px 8px; }
+    .speeds .yt {
+      flex-direction: column;
+      gap: 8px;
+      min-height: 0;
+      padding: 10px 8px 12px;
+      font-size: 14px;
+    }
+    .faces {
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+      width: 100%;
+      height: 78px;
+    }
+    .faces img {
+      flex: 1 1 0;
+      width: 0;
+      max-width: 108px;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      border-radius: 8px;
+      display: block;
+    }
     .yt {
       display: flex;
       align-items: center;
@@ -177,9 +200,25 @@
         <a class="yt" href="https://open.kakao.com/o/gL2Xyl9h" target="_blank" rel="noopener">도건 린클 연구소 단톡방 바로가기</a>
       </div>
       <div class="shortcuts speeds">
-        <a class="yt" href="speed-knight.html">기사/군주 공격속도</a>
-        <a class="yt" href="speed-elf.html">요정 공격속도</a>
-        <a class="yt" href="speed-mage.html">법사 공격속도</a>
+        <a class="yt" href="speed-knight.html">
+          <span class="faces">
+            <img src="class-prince.jpg" alt="군주">
+            <img src="class-knight.jpg" alt="기사">
+          </span>
+          <span>기사/군주 공격속도</span>
+        </a>
+        <a class="yt" href="speed-elf.html">
+          <span class="faces">
+            <img src="class-elf.jpg" alt="요정">
+          </span>
+          <span>요정 공격속도</span>
+        </a>
+        <a class="yt" href="speed-mage.html">
+          <span class="faces">
+            <img src="class-mage.jpg" alt="마법사">
+          </span>
+          <span>법사 공격속도</span>
+        </a>
       </div>
       <a class="tool" href="https://linkstyle84-sketch.github.io/lin-dps/"><img src="dps-tool.jpg" alt="리니지 클래식 무기 DPS 측정기"></a>
     </div>
