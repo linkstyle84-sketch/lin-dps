@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>피드백 · 도건유튜브</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0c0a08;
+      --ink: #f6edd6;
+      --muted: #cbb994;
+      --gold: #e4c36a;
+      --line: rgba(228, 195, 106, 0.28);
+    }
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      background:
+        radial-gradient(900px 380px at 50% -60px, #3a2410 0%, transparent 62%),
+        var(--bg);
+      color: var(--ink);
+      font-family: "Noto Sans KR", sans-serif;
+    }
+    .wrap {
+      width: min(760px, calc(100% - 28px));
+      margin: 0 auto;
+      padding: 36px 0 56px;
+    }
+    .back { margin: 0 0 18px; }
+    .back a { color: var(--gold); font-weight: 800; text-decoration: none; }
+    .back a:hover { text-decoration: underline; }
+    h1 { margin: 0 0 10px; font-size: 28px; font-weight: 900; letter-spacing: -0.03em; }
+    .note { margin: 0 0 18px; color: var(--muted); font-size: 14px; font-weight: 700; line-height: 1.6; }
+    form {
+      display: grid;
+      gap: 12px;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: rgba(228, 195, 106, 0.06);
+    }
+    label { display: grid; gap: 6px; color: var(--gold); font-size: 14px; font-weight: 800; }
+    input, textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 12px 14px;
+      background: #140f0c;
+      color: var(--ink);
+      font: inherit;
+      font-weight: 700;
+    }
+    textarea { min-height: 140px; resize: vertical; }
+    button {
+      border: 2px solid var(--gold);
+      border-radius: 16px;
+      padding: 14px 16px;
+      background: rgba(228, 195, 106, 0.1);
+      color: var(--gold);
+      font: inherit;
+      font-size: 17px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+    button:disabled { opacity: 0.6; cursor: default; }
+    .status { margin: 14px 0 0; min-height: 1.5em; color: var(--gold); font-weight: 800; line-height: 1.5; }
+    .hp { position: absolute; left: -9999px; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <p class="back"><a href="./">처음으로</a></p>
+    <h1>피드백</h1>
+    <p class="note">남긴 글은 제작자 메일로 도착합니다. 이 페이지에는 다른 사람의 글이 쌓여 보이지 않습니다.</p>
+    <form id="board">
+      <label>이름
+        <input name="name" maxlength="30" placeholder="익명" autocomplete="nickname">
+      </label>
+      <label>내용
+        <textarea name="message" maxlength="1000" required placeholder="고칠 점이나 추가하면 좋은 것을 적어 주세요."></textarea>
+      </label>
+      <label>답장 받을 연락처
+        <input name="contact" maxlength="80" placeholder="카톡 아이디나 메일. 없어도 됩니다." autocomplete="off">
+      </label>
+      <input class="hp" name="_honey" tabindex="-1" autocomplete="off">
+      <button type="submit">보내기</button>
+    </form>
+    <p class="status" id="status" role="status"></p>
+  </div>
+  <script>
+    var form = document.getElementById('board');
+    var status = document.getElementById('status');
+    form.addEventListener('submit', function (event) {
+      event.preventDefault();
+      var data = new FormData(form);
+      if (String(data.get('_honey') || '').trim()) return;
+      var message = String(data.get('message') || '').trim();
+      if (message.length < 2) {
+        status.textContent = '내용을 두 글자 이상 적어 주세요.';
+        return;
+      }
+      var name = String(data.get('name') || '').trim() || '익명';
+      var button = form.querySelector('button');
+      button.disabled = true;
+      status.textContent = '보내는 중입니다.';
+      fetch('https://formsubmit.co/ajax/linkstyle84@gmail.com', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({
+          name: name,
+          message: message,
+          contact: String(data.get('contact') || '').trim(),
+          _subject: '린클 가이드 피드백',
+          _template: 'table',
+          _captcha: 'false'
+        })
+      }).then(function (res) { return res.json(); }).then(function (body) {
+        var ok = body && (body.success === true || body.success === 'true');
+        if (ok) {
+          form.reset();
+          status.textContent = '보냈습니다. 감사합니다.';
+          return;
+        }
+        var msg = body && body.message ? String(body.message) : '';
+        if (/activation/i.test(msg)) {
+          status.textContent = '처음 한 번은 linkstyle84@gmail.com 으로 온 활성화 메일의 링크를 눌러 주세요. 그 다음부터 피드백이 그 메일로 도착합니다.';
+          return;
+        }
+        status.textContent = '보내지 못했습니다. 잠시 뒤에 다시 눌러 주세요.';
+      }).catch(function () {
+        status.textContent = '보내지 못했습니다. 잠시 뒤에 다시 눌러 주세요.';
+      }).then(function () {
+        button.disabled = false;
+      });
+    });
+  </script>
+</body>
+</html>
