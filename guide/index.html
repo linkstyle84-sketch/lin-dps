@@ -69,18 +69,27 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      gap: 10px;
       min-height: 64px;
-      padding: 16px 12px;
+      padding: 8px 12px;
       border-radius: 16px;
       border: 2px solid var(--gold);
       background: rgba(228, 195, 106, 0.1);
       color: var(--gold);
-      text-align: center;
+      text-align: left;
       text-decoration: none;
-      font-size: 17px;
+      font-size: 16px;
       font-weight: 900;
       letter-spacing: -0.02em;
       line-height: 1.35;
+    }
+    .yt img {
+      width: 64px;
+      height: 64px;
+      flex: 0 0 auto;
+      border-radius: 12px;
+      object-fit: cover;
+      display: block;
     }
     .yt:hover { filter: brightness(1.08); transform: translateY(-1px); }
     .banner-row {
@@ -185,8 +194,8 @@
     <div class="banner">배너 광고 구함</div>
     <div class="tools">
       <div class="shortcuts">
-        <a class="yt" href="https://www.youtube.com/user/linkstyle84" target="_blank" rel="noopener">도건유튜브 바로가기</a>
-        <a class="yt" href="https://open.kakao.com/o/gL2Xyl9h" target="_blank" rel="noopener">도건 린클 연구소 단톡방 바로가기</a>
+        <a class="yt" href="https://www.youtube.com/user/linkstyle84" target="_blank" rel="noopener"><img src="shortcut-youtube.jpg" alt=""><span>도건유튜브 바로가기</span></a>
+        <a class="yt" href="https://open.kakao.com/o/gL2Xyl9h" target="_blank" rel="noopener"><img src="shortcut-kakao.jpg" alt=""><span>도건 린클 연구소 단톡방 바로가기</span></a>
       </div>
       <div class="speed-banners">
         <a class="speed-banner" href="speed-knight.html"><img src="btn-knight.jpg" alt="기사/군주 공격속도"></a>
