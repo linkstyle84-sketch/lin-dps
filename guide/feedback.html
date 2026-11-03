@@ -37,6 +37,13 @@
       text-decoration: none;
     }
     .back a:hover, .text-btn:hover { text-decoration: underline; }
+    button.text-btn {
+      border: 0;
+      padding: 0;
+      background: none;
+      font: inherit;
+      cursor: pointer;
+    }
     h1 { margin: 0 0 10px; font-size: 28px; font-weight: 900; letter-spacing: -0.03em; }
     .note { margin: 0 0 18px; color: var(--muted); font-size: 14px; font-weight: 700; line-height: 1.6; }
     .bar {
@@ -112,6 +119,24 @@
     }
     textarea { min-height: 180px; resize: vertical; }
     .actions { display: flex; gap: 10px; align-items: center; }
+    .card .actions { margin-top: 16px; }
+    form.lock {
+      display: flex;
+      gap: 8px;
+      margin: 0 0 12px;
+    }
+    form.lock input { max-width: 280px; }
+    button.del {
+      border: 0;
+      padding: 0;
+      background: none;
+      color: var(--gold);
+      font: inherit;
+      font-weight: 800;
+      cursor: pointer;
+    }
+    button.del:disabled { opacity: 0.6; cursor: default; }
+    td.del, th.del { width: 72px; text-align: right; }
     .status { margin: 14px 0 0; min-height: 1.5em; color: var(--gold); font-weight: 800; line-height: 1.5; }
     .hp { position: absolute; left: -9999px; }
   </style>
@@ -127,8 +152,10 @@
   <script>
     var TOKEN = 'c6b74c20ad987368c700df8919c6d63d58c74baab7914983898341e6f4aa';
     var PATH = '린클-피드백-10-30';
+    var OWNER = 'f307bbf44d5a7f34133e53af76cd7aa23d783b233e8660efaa33aed96854b061';
     var app = document.getElementById('app');
-    var status = document.getElementById('status');
+    var notice = document.getElementById('status');
+    var owner = false;
 
     function el(tag, className, text) {
       var node = document.createElement(tag);
@@ -201,13 +228,103 @@
       });
     }
 
+    function sha256(text) {
+      var data = new TextEncoder().encode(text);
+      return crypto.subtle.digest('SHA-256', data).then(function (buf) {
+        var bytes = new Uint8Array(buf);
+        var hex = '';
+        for (var i = 0; i < bytes.length; i += 1) {
+          var part = bytes[i].toString(16);
+          hex += (part.length === 1 ? '0' : '') + part;
+        }
+        return hex;
+      });
+    }
+
+    function askOwner(after) {
+      var box = document.createElement('form');
+      box.className = 'lock';
+      box.id = 'lock';
+      var input = document.createElement('input');
+      input.type = 'password';
+      input.name = 'owner';
+      input.placeholder = '관리 비밀번호';
+      input.autocomplete = 'current-password';
+      input.required = true;
+      var ok = el('button', 'btn', '확인');
+      ok.type = 'submit';
+      box.appendChild(input);
+      box.appendChild(ok);
+      box.addEventListener('submit', function (event) {
+        event.preventDefault();
+        var password = input.value;
+        ok.disabled = true;
+        notice.textContent = '확인 중입니다.';
+        sha256(password).then(function (hash) {
+          if (hash !== OWNER) {
+            notice.textContent = '비밀번호가 맞지 않습니다.';
+            ok.disabled = false;
+            input.focus();
+            return;
+          }
+          owner = true;
+          notice.textContent = '';
+          if (box.parentNode) box.parentNode.removeChild(box);
+          if (after) after();
+        }).catch(function () {
+          notice.textContent = '비밀번호를 확인하지 못했습니다.';
+          ok.disabled = false;
+        });
+      });
+      return box;
+    }
+
+    function removePost(id, button) {
+      if (!owner) return;
+      if (!window.confirm('이 글을 지울까요?')) return;
+      if (button) button.disabled = true;
+      notice.textContent = '지우는 중입니다.';
+      loadPosts().then(function (posts) {
+        var next = posts.filter(function (post) { return post.id !== id; });
+        if (next.length === posts.length) throw new Error('missing');
+        return writePosts(next);
+      }).then(function () {
+        notice.textContent = '지웠습니다.';
+        if ((location.hash || '') !== '#' && (location.hash || '') !== '') location.hash = '#';
+        else draw();
+      }).catch(function () {
+        notice.textContent = '지우지 못했습니다. 잠시 뒤에 다시 눌러 주세요.';
+        if (button) button.disabled = false;
+      });
+    }
+
     function showList(posts) {
       var ordered = newestFirst(posts);
+      var cols = owner ? 5 : 4;
       var bar = el('div', 'bar');
       bar.appendChild(el('p', 'count', '글 ' + ordered.length));
+      var tools = el('div', 'actions');
       var write = el('a', 'btn', '글쓰기');
       write.href = '#write';
-      bar.appendChild(write);
+      tools.appendChild(write);
+      if (owner) {
+        var lock = el('button', 'text-btn', '잠그기');
+        lock.type = 'button';
+        lock.addEventListener('click', function () {
+          owner = false;
+          draw();
+        });
+        tools.appendChild(lock);
+      } else {
+        var manage = el('button', 'text-btn', '관리');
+        manage.type = 'button';
+        manage.addEventListener('click', function () {
+          if (document.getElementById('lock')) return;
+          app.insertBefore(askOwner(draw), scroll);
+        });
+        tools.appendChild(manage);
+      }
+      bar.appendChild(tools);
       var scroll = el('div', 'scroll');
       var table = el('table');
       var head = document.createElement('thead');
@@ -216,13 +333,14 @@
       hr.appendChild(el('th', '', '제목'));
       hr.appendChild(el('th', 'who', '글쓴이'));
       hr.appendChild(el('th', 'when', '날짜'));
+      if (owner) hr.appendChild(el('th', 'del', '삭제'));
       head.appendChild(hr);
       table.appendChild(head);
       var body = document.createElement('tbody');
       if (!ordered.length) {
         var empty = document.createElement('tr');
         var cell = el('td', 'empty', '아직 올라온 글이 없습니다.');
-        cell.colSpan = 4;
+        cell.colSpan = cols;
         empty.appendChild(cell);
         body.appendChild(empty);
       } else {
@@ -236,6 +354,14 @@
           row.appendChild(titleCell);
           row.appendChild(el('td', 'who', post.name || '익명'));
           row.appendChild(el('td', 'when', when(post.at)));
+          if (owner) {
+            var delCell = el('td', 'del');
+            var del = el('button', 'del', '삭제');
+            del.type = 'button';
+            del.addEventListener('click', function () { removePost(post.id, del); });
+            delCell.appendChild(del);
+            row.appendChild(delCell);
+          }
           body.appendChild(row);
         });
       }
@@ -262,6 +388,22 @@
       card.appendChild(el('h2', '', post.title));
       card.appendChild(el('p', 'meta', (post.name || '익명') + ' · ' + when(post.at)));
       card.appendChild(el('p', 'body', post.body));
+      var actions = el('div', 'actions');
+      if (owner) {
+        var del = el('button', 'btn', '삭제');
+        del.type = 'button';
+        del.addEventListener('click', function () { removePost(post.id, del); });
+        actions.appendChild(del);
+      } else {
+        var manage = el('button', 'text-btn', '관리');
+        manage.type = 'button';
+        manage.addEventListener('click', function () {
+          if (document.getElementById('lock')) return;
+          card.insertBefore(askOwner(draw), actions);
+        });
+        actions.appendChild(manage);
+      }
+      card.appendChild(actions);
       app.appendChild(card);
     }
 
@@ -291,15 +433,15 @@
         var body = form.elements.body.value.trim();
         var name = form.elements.name.value.trim() || '익명';
         if (!title) {
-          status.textContent = '제목을 적어 주세요.';
+          notice.textContent = '제목을 적어 주세요.';
           return;
         }
         if (body.length < 2) {
-          status.textContent = '내용을 두 글자 이상 적어 주세요.';
+          notice.textContent = '내용을 두 글자 이상 적어 주세요.';
           return;
         }
         submit.disabled = true;
-        status.textContent = '올리는 중입니다.';
+        notice.textContent = '올리는 중입니다.';
         var post = {
           id: Date.now().toString(36) + Math.random().toString(36).slice(2, 8),
           title: title.slice(0, 80),
@@ -313,10 +455,10 @@
           if (posts.length > 100) posts = posts.slice(posts.length - 100);
           return writePosts(posts);
         }).then(function () {
-          status.textContent = '올렸습니다.';
+          notice.textContent = '올렸습니다.';
           location.hash = 'post/' + encodeURIComponent(post.id);
         }).catch(function () {
-          status.textContent = '올리지 못했습니다. 잠시 뒤에 다시 눌러 주세요.';
+          notice.textContent = '올리지 못했습니다. 잠시 뒤에 다시 눌러 주세요.';
           submit.disabled = false;
         });
       });
@@ -340,7 +482,7 @@
     function draw() {
       var here = route();
       app.textContent = '';
-      if (here.view !== 'write') status.textContent = '';
+      if (here.view !== 'write' && notice.textContent !== '지웠습니다.') notice.textContent = '';
       loadPosts().then(function (posts) {
         if (route().view !== here.view || route().id !== here.id) return;
         app.textContent = '';
