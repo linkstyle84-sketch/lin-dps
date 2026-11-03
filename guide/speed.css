@@ -76,6 +76,8 @@ td.na { color: var(--muted); font-weight: 700; }
   vertical-align: middle;
   image-rendering: pixelated;
 }
+table.bands th, table.bands td { text-align: center; }
+table.bands th:first-child, table.bands td:first-child { text-align: center; }
 .empty {
   margin: 0;
   padding: 28px 18px;
