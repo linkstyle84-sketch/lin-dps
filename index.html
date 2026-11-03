@@ -348,9 +348,12 @@ body.class-elf .knight-only { display: none; }
 .dps-num { font-size: 32px; line-height: 1; font-weight: 400; color: var(--num); }
 .dps-unit { font-family: "LinText", sans-serif; font-size: 14px; color: var(--text); margin-left: 4px; }
 .chips { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
-.chip { background: rgba(0, 0, 0, 0.35); border: 1px solid var(--line-dim); border-radius: 2px; padding: 6px 8px; text-align: left; }
+.chip { background: rgba(0, 0, 0, 0.35); border: 1px solid var(--line-dim); border-radius: 2px; padding: 6px 8px; text-align: left; width: 100%; }
 .chip b { display: block; font-size: 16px; font-weight: 400; line-height: 1.1; }
 .chip span { color: var(--text); font-size: 14px; }
+button.chip.on { border-color: var(--gold); background: #3a3016; }
+button.dps-cell { background: none; border: 0; padding: 0; width: 100%; font-size: 18px; }
+button.dps-cell:hover { color: var(--gold-2); }
 .warn { color: var(--danger); }
 
 .bar-row { display: grid; grid-template-columns: 92px 1fr 56px; gap: 8px; align-items: center; font-size: 14px; color: var(--text); }
@@ -718,7 +721,7 @@ footer.note { margin-top: 8px; color: var(--muted); font-size: 14px; }
       <h1>리니지 클래식 DPS 측정기</h1>
       <div class="credit-row">
         <p>제작: <a class="channel" href="https://www.youtube.com/user/linkstyle84" target="_blank" rel="noopener">도건유튜브</a></p>
-        <p class="updated">업데이트 일시: 2026년 11월 3일 22:40 (버전: 3.32v)</p>
+        <p class="updated">업데이트 일시: 2026년 11월 3일 22:50 (버전: 3.33v)</p>
       </div>
     </div>
     <div class="top-actions">
@@ -1193,6 +1196,7 @@ const state = {
   seq: 1,
   sortKey: 'dpsSmall',
   sortDir: 'desc',
+  detailKey: 'dpsSmall',
   selectedId: null,
   popup: null,
   compareMode: 'all',
@@ -1627,14 +1631,32 @@ function sortedView(items) {
   return filled.concat(empty);
 }
 
+const DETAIL_VIEWS = {
+  dpsSmall: { label: '작몹 DPS', hit: '작몹', avg: 'avgHit', large: false },
+  dpsLarge: { label: '큰몹 DPS', hit: '큰몹', avg: 'avgLarge', large: true },
+  dpsUndeadSmall: { label: '언데드 작 DPS', hit: '언데드 작', avg: 'avgUndeadSmall', large: false, undead: true },
+  dpsUndeadLarge: { label: '언데드 큰 DPS', hit: '언데드 큰', avg: 'avgUndeadLarge', large: true, undead: true },
+};
+
+function detailView() {
+  return DETAIL_VIEWS[state.detailKey] || DETAIL_VIEWS.dpsSmall;
+}
+
 function buildLines(result) {
   if (!result || result.empty) return ['무기를 고르면 계산이 여기에 나옵니다.'];
   if (result.missing) return [`${result.enchant} ${result.name} 이 무기DB에 없습니다.`];
+  const view = detailView();
   const p = result.parts;
   const statName = state.cls === '기사' || result.type !== '활' ? 'STR' : 'DEX';
+  const weaponDice = view.large ? p.weaponDiceLarge : p.weaponDice;
+  const arrowDice = view.large ? p.arrowDiceLarge : p.arrowDice;
+  const dice = view.large ? p.diceLarge : p.diceSmall;
+  const avg = result[view.avg];
+  const undeadBlocked = !!view.undead && !hasUndead(result);
   const dmgBits = [p.maxDice
-    ? `최대 주사위 ${fmtNum(p.weaponDice)} = ${fmtNum(p.diceSmall)}`
-    : `주사위 (${fmtNum(p.weaponDice)}+${fmtNum(p.arrowDice)}+1)/2 = ${fmtNum(p.diceSmall)}`];
+    ? `최대 주사위 ${fmtNum(weaponDice)} = ${fmtNum(dice)}`
+    : `주사위 (${fmtNum(weaponDice)}+${fmtNum(arrowDice)}+1)/2 = ${fmtNum(dice)}`];
+  if (view.undead && p.undeadAvg > 0) dmgBits.push(`언데드 평균 ${fmtNum(p.undeadAvg)} (1~${fmtNum(p.undeadMax)})`);
   if (p.flat) dmgBits.push(`추타 ${fmtNum(p.flat)}`);
   if (p.encStep) dmgBits.push(`강화 +${fmtNum(p.encStep)}`);
   if (p.encTier) dmgBits.push(`${p.encTier === 5 ? '11강' : '10강'} 추타 +${fmtNum(p.encTier)}`);
@@ -1644,7 +1666,9 @@ function buildLines(result) {
   if (p.levelDmg) dmgBits.push(`레벨 ${fmtNum(p.levelDmg)}`);
   if (p.statDmg) dmgBits.push(`${statName} ${fmtNum(p.statDmg)}`);
   if (p.dr) dmgBits.push(`리덕 -${fmtNum(p.dr)}`);
-  const lines = [`1타 ${fmtNum(result.avgHit)} = ${dmgBits.join(' + ')}`];
+  const lines = [undeadBlocked
+    ? `${view.hit} 1타 — (언데드 추타 없음)`
+    : `${view.hit} 1타 ${fmtNum(avg)} = ${dmgBits.join(' + ')}`];
   const accBits = [`무기 ${fmtNum(p.weaponAcc)}`];
   if (p.encStep) accBits.push(`강화 +${fmtNum(p.encStep)}`);
   if (p.buffAcc) accBits.push(`버프 ${fmtNum(p.buffAcc)}`);
@@ -1654,20 +1678,11 @@ function buildLines(result) {
   if (result.hitNote) lines.push('명중률 데이터 없음');
   else if (result.erApplied) lines.push(`명중률 ${result.hitRate.toFixed(1)}% = 테이블 ${result.tableHit.toFixed(1)}% − ER ${fmtNum(state.er)}`);
   else lines.push(`명중률 ${result.hitRate.toFixed(1)}%`);
-  if (result.apsNote === '활만' || result.apsNote === '근거리만') lines.push(`공속 ${result.apsNote}. 이 무기는 이 클래스 DPS에 넣지 않습니다.`);
-  else if (result.aps == null) lines.push('이 변신에는 이 무기 공속이 없습니다.');
-  else lines.push(`작몹 DPS ${fmtNum(result.avgHit)} × ${result.hitRate.toFixed(1)}% × ${fmtAps(result.aps)} = ${result.dpsSmall.toFixed(1)}`);
-  if (p.undeadAvg > 0) lines.push(`언데드 주사위 1~${fmtNum(p.undeadMax)} (기본 ${fmtNum(p.undeadBase)} + 강화 ${fmtNum(result.enchant)}) → 평균 ${fmtNum(p.undeadAvg)} 가산`);
-  else lines.push('언데드 추타 없음');
-  const largeDice = result.type === '활'
-    ? ` · 큰 주사위 (${fmtNum(p.weaponDiceLarge)}+${fmtNum(p.arrowDiceLarge)}+1)/2 = ${fmtNum(p.diceLarge)}`
-    : '';
-  lines.push(`큰몹 1타 ${fmtNum(result.avgLarge)}${largeDice} · 언데드 작 1타 ${hasUndead(result) ? fmtNum(result.avgUndeadSmall) : '-'} · 언데드 큰 1타 ${hasUndead(result) ? fmtNum(result.avgUndeadLarge) : '-'}`);
+  if (undeadBlocked) lines.push(`${view.label} 없음`);
+  else if (result.apsNote === '활만' || result.apsNote === '근거리만') lines.push(`공속 ${result.apsNote}. 이 무기는 이 클래스 DPS에 넣지 않습니다.`);
+  else if (result.aps == null || result.hitRate == null) lines.push('이 변신에는 이 무기 공속이 없습니다.');
+  else lines.push(`${view.label} ${fmtNum(avg)} × 명중률 ${result.hitRate.toFixed(1)}% × 공속 ${fmtAps(result.aps)} = 최종 DPS ${Number(result[state.detailKey] ?? result.dpsSmall).toFixed(1)}`);
   return lines;
-}
-
-function sortLabel() {
-  return (SORTS.find((s) => s[0] === state.sortKey) || SORTS[0])[1];
 }
 
 function namedRows(view) {
@@ -1708,11 +1723,11 @@ function barHtml(label, value, max) {
 function heroHtml(view) {
   const picked = view.find((item) => item.row.id === state.selectedId && item.row.name);
   const result = picked?.result;
-  const label = sortLabel();
-  const scoreKey = state.sortKey || 'dpsSmall';
-  const undeadSort = scoreKey === 'dpsUndeadSmall' || scoreKey === 'dpsUndeadLarge';
+  const focus = detailView();
+  const label = focus.label;
+  const undeadSort = !!focus.undead;
   const score = result && !result.missing && !result.empty
-    ? (undeadSort && !hasUndead(result) ? null : result[scoreKey])
+    ? (undeadSort && !hasUndead(result) ? null : result[state.detailKey] ?? result.dpsSmall)
     : null;
   const scoreText = result && !result.missing && !result.empty && undeadSort && !hasUndead(result)
     ? '-'
@@ -1727,7 +1742,8 @@ function heroHtml(view) {
       const shown = gaugeValue(result, key);
       val = shown == null ? '-' : shown.toFixed(1);
     }
-    return `<div class="chip"><span>${name}</span><b>${val}</b></div>`;
+    const on = key === (DETAIL_VIEWS[state.detailKey] ? state.detailKey : 'dpsSmall');
+    return `<button type="button" class="chip${on ? ' on' : ''}" data-detail-key="${key}" aria-pressed="${on ? 'true' : 'false'}"><span>${name}</span><b>${val}</b></button>`;
   }).join('');
   const art = result && !result.missing && result.name && typeof WEAPON_IMG !== 'undefined' ? WEAPON_IMG[result.name] : '';
   const weaponImg = art ? `<img class="weapon-art" alt="" src="${art}">` : '';
@@ -1954,12 +1970,17 @@ function renderTable(view) {
       return Number(n).toFixed(digits);
     };
     const hitText = !row.name || !result || result.missing ? '—' : result.hitNote ? result.hitNote : `${result.hitRate.toFixed(1)}%`;
+    const dpsCell = (key) => {
+      const text = cell(key, 1);
+      if (!row.name) return `<span class="num">${esc(text)}</span>`;
+      return `<button type="button" class="dps-cell num" data-detail="${row.id}" data-detail-key="${key}">${esc(text)}</button>`;
+    };
     return `<tr data-id="${row.id}" class="${state.selectedId === row.id ? 'pick' : ''}">
       <td>${rank}</td>
       <td class="left">${enchantCell}</td>
       <td class="left grow">${weaponMenu(row.name)}</td>
       <td class="left grow">${transformMenu(row.transform)}</td>
-      <td class="stat-band" colspan="6"><div class="stat-grid"><span class="num ${apsClass}">${esc(apsText)}</span><span class="num">${esc(hitText)}</span><span class="num">${cell('dpsSmall', 1)}</span><span class="num">${cell('dpsLarge', 1)}</span><span class="num">${cell('dpsUndeadSmall', 1)}</span><span class="num">${cell('dpsUndeadLarge', 1)}</span></div></td>
+      <td class="stat-band" colspan="6"><div class="stat-grid"><span class="num ${apsClass}">${esc(apsText)}</span><span class="num">${esc(hitText)}</span>${dpsCell('dpsSmall')}${dpsCell('dpsLarge')}${dpsCell('dpsUndeadSmall')}${dpsCell('dpsUndeadLarge')}</div></td>
       <td><button type="button" class="ghost small" data-detail="${row.id}">상세보기</button></td>
       <td><button type="button" class="x" data-del="${row.id}" aria-label="행 삭제">×</button></td>
     </tr>`;
@@ -2113,7 +2134,7 @@ function renderSetup() {
         '이 창을 닫으면 왼쪽에서 클래스, 레벨, 힘 또는 덱스, 버프, 피격자를 바꿀 수 있습니다. 레벨, 힘 또는 덱스, 피격자 숫자는 엔터를 누르면 오른쪽 표가 다시 계산됩니다.',
         '위쪽 클래스 칸에서 기사와 요정을 바꿔도 설정해 둔 무기 목록은 그대로입니다.',
         '작몹, 큰몹, 언데드S, 언데드L 머리글을 누르면 그 수치로 정렬되고, 해제 버튼으로 원래 순서로 돌아옵니다.',
-        '상세보기는 그 무기의 상세 내용을 보여주고, 무기비교는 고른 무기들을 한 화면에서 비교합니다.',
+        '상세보기와 표의 작몹, 큰몹, 언데드 숫자를 누르면 그 대상의 계산이 나옵니다. 무기비교는 고른 무기들을 한 화면에서 비교합니다.',
         '목록 초기화는 무기 줄을 모두 지웁니다.',
         '처음부터 다시 차례로 하려면 처음 설정 하기를 누릅니다.',
       ])}`;
@@ -2247,6 +2268,12 @@ function bind() {
     if (e.target.classList && e.target.classList.contains('weapon-art')) e.target.remove();
   }, true);
   document.getElementById('modal').addEventListener('click', (e) => {
+    const chip = e.target.closest('[data-detail-key]');
+    if (chip && state.popup === 'detail') {
+      state.detailKey = chip.dataset.detailKey;
+      refresh();
+      return;
+    }
     const mode = e.target.closest('[data-compare]');
     if (mode) {
       state.compareMode = mode.dataset.compare;
@@ -2385,6 +2412,7 @@ function bind() {
     const detail = e.target.closest('[data-detail]');
     if (detail) {
       state.selectedId = Number(detail.dataset.detail);
+      state.detailKey = DETAIL_VIEWS[detail.dataset.detailKey] ? detail.dataset.detailKey : 'dpsSmall';
       state.popup = 'detail';
       refresh();
       return;
