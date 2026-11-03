@@ -722,7 +722,7 @@ footer.note { margin-top: 8px; color: var(--muted); font-size: 14px; }
       <h1>리니지 클래식 DPS 측정기</h1>
       <div class="credit-row">
         <p>제작: <a class="channel" href="https://www.youtube.com/user/linkstyle84" target="_blank" rel="noopener">도건유튜브</a></p>
-        <p class="updated">업데이트 일시: 2026년 11월 3일 22:48 (버전: 3.35v)</p>
+        <p class="updated">업데이트 일시: 2026년 11월 3일 22:51 (버전: 3.36v)</p>
       </div>
     </div>
     <div class="top-actions">
@@ -1194,6 +1194,10 @@ const state = {
   buffsKnight: null,
   buffsElfMelee: null,
   rows: [],
+  rowsElf: null,
+  rowsKnight: null,
+  selectedElf: null,
+  selectedKnight: null,
   seq: 1,
   sortKey: 'dpsSmall',
   sortDir: 'desc',
@@ -1287,11 +1291,36 @@ function applyLevelTransform() {
   for (const row of state.rows) row.transform = name;
 }
 
+function rowsKey(cls) {
+  return cls === '기사' ? 'rowsKnight' : 'rowsElf';
+}
+
+function selectedKey(cls) {
+  return cls === '기사' ? 'selectedKnight' : 'selectedElf';
+}
+
+function stashClassRows(cls) {
+  state[rowsKey(cls)] = state.rows;
+  state[selectedKey(cls)] = state.selectedId;
+}
+
+function showClassRows(cls) {
+  const stored = state[rowsKey(cls)];
+  if (Array.isArray(stored)) {
+    state.rows = stored;
+    const selected = state[selectedKey(cls)];
+    state.selectedId = state.rows.some((row) => row.id === selected) ? selected : null;
+    return;
+  }
+  useClassWeapons(cls);
+}
+
 function useClassWeapons(cls) {
   const preset = classPreset(cls);
   const transform = transformForLevel(cls, state.level);
   state.rows = preset.rows.map(([name, enchant]) => rowFrom(name, enchant, transform));
   state.selectedId = null;
+  stashClassRows(cls);
 }
 
 function applyPreset(preset) {
@@ -1317,6 +1346,11 @@ function applyPreset(preset) {
   useBuffSet();
   state.rows = preset.rows.map(([name, enchant]) => rowFrom(name, enchant, transformForLevel(preset.cls, preset.level)));
   state.selectedId = null;
+  state.rowsElf = null;
+  state.rowsKnight = null;
+  state.selectedElf = null;
+  state.selectedKnight = null;
+  stashClassRows(preset.cls);
   writeControls();
   applyClassUi();
   refresh();
@@ -1330,16 +1364,36 @@ function load() {
     if (!saved || !Array.isArray(saved.rows)) return false;
     Object.assign(state, saved);
     if (!state.materials) state.materials = {};
-    state.seq = Math.max(state.seq || 1, ...state.rows.map((r) => r.id || 0));
+    const ids = [state.seq || 1];
+    for (const list of [state.rows, state.rowsElf, state.rowsKnight]) {
+      if (!Array.isArray(list)) continue;
+      for (const row of list) ids.push(row.id || 0);
+    }
+    state.seq = Math.max(...ids);
     return true;
   } catch {
     return false;
   }
 }
 
+function migrateClassRows() {
+  if (!Array.isArray(state.rowsElf) && !Array.isArray(state.rowsKnight)) {
+    const rows = Array.isArray(state.rows) ? state.rows : [];
+    if (state.cls === '기사') {
+      state.rowsKnight = rows;
+      state.selectedKnight = state.selectedId;
+    } else {
+      state.rowsElf = rows;
+      state.selectedElf = state.selectedId;
+    }
+  }
+  showClassRows(state.cls);
+}
+
 function save() {
-  const { cls, level, stat, ac, er, arrow, elfRanged, elfStatMode, dex, str, knightStat, extraDmg, extraDr, buffs, buffsElf, buffsKnight, buffsElfMelee, rows, seq, sortKey, sortDir, selectedId, materials } = state;
-  localStorage.setItem('lin-dps-html-v2', JSON.stringify({ cls, level, stat, ac, er, arrow, elfRanged, elfStatMode, dex, str, knightStat, extraDmg, extraDr, buffs, buffsElf, buffsKnight, buffsElfMelee, rows, seq, sortKey, sortDir, selectedId, materials }));
+  stashClassRows(state.cls);
+  const { cls, level, stat, ac, er, arrow, elfRanged, elfStatMode, dex, str, knightStat, extraDmg, extraDr, buffs, buffsElf, buffsKnight, buffsElfMelee, rows, rowsElf, rowsKnight, selectedElf, selectedKnight, seq, sortKey, sortDir, selectedId, materials } = state;
+  localStorage.setItem('lin-dps-html-v2', JSON.stringify({ cls, level, stat, ac, er, arrow, elfRanged, elfStatMode, dex, str, knightStat, extraDmg, extraDr, buffs, buffsElf, buffsKnight, buffsElfMelee, rows, rowsElf, rowsKnight, selectedElf, selectedKnight, seq, sortKey, sortDir, selectedId, materials }));
 }
 
 function useBuffSet() {
@@ -2148,10 +2202,10 @@ function renderSetup() {
     body.innerHTML = `<img class="setup-shot" alt="클래스, 레벨, 힘 입력" src="${GUIDE_DIRECT}">
       ${setupSteps([
         '이 창을 닫으면 왼쪽에서 클래스, 레벨, 힘 또는 덱스, 버프, 피격자를 바꿀 수 있습니다. 레벨, 힘 또는 덱스, 피격자 숫자는 엔터를 누르면 오른쪽 표가 다시 계산됩니다.',
-        '위쪽 클래스 칸에서 기사와 요정을 바꿔도 설정해 둔 무기 목록은 그대로입니다.',
+        '위쪽 클래스 칸에서 기사와 요정을 바꾸면 그 클래스의 무기 목록이 나옵니다. 다시 돌아오면 그 클래스에 저장해 둔 목록이 그대로입니다.',
         '작몹, 큰몹, 언데드S, 언데드L 머리글을 누르면 그 수치로 정렬되고, 해제 버튼으로 원래 순서로 돌아옵니다.',
         '상세보기와 표의 작몹, 큰몹, 언데드 숫자를 누르면 그 대상의 계산이 나옵니다. 무기비교는 고른 무기들을 한 화면에서 비교합니다.',
-        '목록 초기화는 무기 줄을 모두 지웁니다.',
+        '목록 초기화는 지금 보고 있는 클래스의 무기 줄을 모두 지웁니다. 다른 클래스 목록은 남습니다.',
         '처음부터 다시 차례로 하려면 처음 설정 하기를 누릅니다.',
       ])}`;
   }
@@ -2213,8 +2267,10 @@ function bind() {
   document.getElementById('btnElf').addEventListener('click', () => {
     if (state.cls === '요정') return;
     rememberStat();
+    stashClassRows(state.cls);
     state.cls = '요정';
     state.stat = state.elfStatMode === 'str' ? (state.str ?? state.stat) : (state.dex ?? state.stat);
+    showClassRows('요정');
     useBuffSet();
     applyClassUi();
     refresh();
@@ -2222,8 +2278,10 @@ function bind() {
   document.getElementById('btnKnight').addEventListener('click', () => {
     if (state.cls === '기사') return;
     rememberStat();
+    stashClassRows(state.cls);
     state.cls = '기사';
     state.stat = state.knightStat ?? state.stat;
+    showClassRows('기사');
     useBuffSet();
     applyClassUi();
     refresh();
@@ -2317,6 +2375,7 @@ function bind() {
       const next = clsBtn.dataset.setupClass;
       if (state.cls !== next) {
         rememberStat();
+        stashClassRows(state.cls);
         state.cls = next;
         if (next === '요정') {
           state.elfStatMode = 'dex';
@@ -2467,7 +2526,10 @@ function mount() {
   state.elfRanged = base.elfRanged;
   const restored = load();
   if (!restored) applyPreset(ELF_PRESET);
-  else migrateBuffSets();
+  else {
+    migrateBuffSets();
+    migrateClassRows();
+  }
   writeControls();
   applyClassUi();
   bind();
