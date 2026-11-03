@@ -63,8 +63,39 @@
       text-decoration: none;
       box-shadow: 0 10px 28px rgba(0, 0, 0, .35);
     }
+    button.speed-banner {
+      width: 100%;
+      border: 0;
+      background: transparent;
+      color: inherit;
+      font: inherit;
+      cursor: pointer;
+    }
     .speed-banner img { display: block; width: 100%; height: auto; }
     .speed-banner:hover { filter: brightness(1.06); transform: translateY(-1px); }
+    .soon {
+      position: fixed;
+      inset: 0;
+      z-index: 30;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      background: rgba(0, 0, 0, 0.72);
+    }
+    .soon[hidden] { display: none; }
+    .soon-card {
+      margin: 0;
+      padding: 28px 36px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #16120c;
+      color: var(--gold);
+      font-size: 18px;
+      font-weight: 800;
+      line-height: 1.5;
+      text-align: center;
+    }
     .yt {
       display: flex;
       align-items: center;
@@ -201,12 +232,12 @@
       <div class="speed-banners">
         <a class="speed-banner" href="speed-knight.html"><img src="btn-knight.jpg" alt="기사/군주 공격속도"></a>
         <a class="speed-banner" href="speed-elf.html"><img src="btn-elf.jpg" alt="요정 공격속도"></a>
-        <a class="speed-banner" href="speed-mage.html"><img src="btn-mage.jpg" alt="법사 공격속도"></a>
+        <button type="button" class="speed-banner js-soon"><img src="btn-mage.jpg" alt="법사 공격속도"></button>
       </div>
       <div class="speed-banners">
         <a class="speed-banner" href="stat-str.html"><img src="btn-str.jpg" alt="힘 STR 추타 명중"></a>
         <a class="speed-banner" href="stat-dex.html"><img src="btn-dex.jpg" alt="덱스 DEX 추타 명중"></a>
-        <a class="speed-banner" href="stat-int.html"><img src="btn-int.jpg" alt="인트 INT 마댐 SP 명중"></a>
+        <button type="button" class="speed-banner js-soon"><img src="btn-int.jpg" alt="인트 INT 마댐 SP 명중"></button>
       </div>
       <a class="tool" href="https://linkstyle84-sketch.github.io/lin-dps/"><img src="dps-tool.jpg" alt="리니지 클래식 무기 DPS 측정기"></a>
       <a class="yt feedback-open" href="feedback.html">피드백 게시판</a>
@@ -218,6 +249,9 @@
     </p>
     <p class="counts"><span>방문자 수: <b id="guide">…</b></span><span>무기 DPS 측정기 방문자수: <b id="tool">…</b></span></p>
   </div>
+  <div class="soon" id="soon" hidden>
+    <p class="soon-card" role="dialog" aria-modal="true">업데이트 준비중 입니다.</p>
+  </div>
   <script src="../count.js?v=3"></script>
   <script>
     function paintCount(key, n) {
@@ -227,6 +261,18 @@
       if (value && typeof value.then === 'function') return value;
       return Promise.resolve(null);
     }
+    document.querySelectorAll('.js-soon').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        document.getElementById('soon').hidden = false;
+      });
+    });
+    var soon = document.getElementById('soon');
+    soon.addEventListener('click', function (e) {
+      if (e.target === soon) soon.hidden = true;
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') soon.hidden = true;
+    });
     if (window.LinCount) {
       LinCount.read('tool').then(function (n) { paintCount('tool', n); });
       asPromise(LinCount.hit('guide', false)).then(function (n) {
