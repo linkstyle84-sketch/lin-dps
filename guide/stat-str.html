@@ -13,32 +13,56 @@
   <div class="wrap">
     <p class="back"><a href="./">처음으로</a></p>
     <h1>힘 STR 추타 · 명중</h1>
-    <p class="note">기사와 군주의 근거리 힘 보너스입니다. 숫자는 측정기와 같은 누적 보너스이고, 명중은 힘 수치와 같습니다. 1부터 50까지입니다.</p>
+    <p class="note">8부터 50까지 한 칸씩입니다. 효과는 그 힘에서 새로 오른 것만 보여 줍니다. 근명은 힘 숫자와 같아서 매번 +1이고, 근댐은 15부터 홀수 힘마다 +1입니다. 근댐의 숫자는 그때의 누적 추타고, - 는 그 칸에서 오르지 않았다는 뜻입니다.</p>
     <div class="scroll">
       <table class="bands">
         <thead>
-          <tr><th>힘</th><th>추타</th><th>명중</th></tr>
+          <tr><th>스탯</th><th>효과</th><th>근댐</th><th>근명</th></tr>
         </thead>
         <tbody>
-          <tr><td>1~14</td><td>+0</td><td>+1~+14</td></tr>
-          <tr><td>15~16</td><td>+1</td><td>+15~+16</td></tr>
-          <tr><td>17~18</td><td>+2</td><td>+17~+18</td></tr>
-          <tr><td>19~20</td><td>+3</td><td>+19~+20</td></tr>
-          <tr><td>21~22</td><td>+4</td><td>+21~+22</td></tr>
-          <tr><td>23~24</td><td>+5</td><td>+23~+24</td></tr>
-          <tr><td>25~26</td><td>+6</td><td>+25~+26</td></tr>
-          <tr><td>27~28</td><td>+7</td><td>+27~+28</td></tr>
-          <tr><td>29~30</td><td>+8</td><td>+29~+30</td></tr>
-          <tr><td>31~32</td><td>+9</td><td>+31~+32</td></tr>
-          <tr><td>33~34</td><td>+10</td><td>+33~+34</td></tr>
-          <tr><td>35~36</td><td>+11</td><td>+35~+36</td></tr>
-          <tr><td>37~38</td><td>+12</td><td>+37~+38</td></tr>
-          <tr><td>39~40</td><td>+13</td><td>+39~+40</td></tr>
-          <tr><td>41~42</td><td>+14</td><td>+41~+42</td></tr>
-          <tr><td>43~44</td><td>+15</td><td>+43~+44</td></tr>
-          <tr><td>45~46</td><td>+16</td><td>+45~+46</td></tr>
-          <tr><td>47~48</td><td>+17</td><td>+47~+48</td></tr>
-          <tr><td>49~50</td><td>+18</td><td>+49~+50</td></tr>
+          <tr class="start"><td>8</td><td>START</td><td class="flat">-</td><td>+8</td></tr>
+          <tr><td>9</td><td>근명+1</td><td class="flat">-</td><td>+9</td></tr>
+          <tr><td>10</td><td>근명+1</td><td class="flat">-</td><td>+10</td></tr>
+          <tr><td>11</td><td>근명+1</td><td class="flat">-</td><td>+11</td></tr>
+          <tr><td>12</td><td>근명+1</td><td class="flat">-</td><td>+12</td></tr>
+          <tr><td>13</td><td>근명+1</td><td class="flat">-</td><td>+13</td></tr>
+          <tr><td>14</td><td>근명+1</td><td class="flat">-</td><td>+14</td></tr>
+          <tr class="up"><td>15</td><td>근댐+1,근명+1</td><td>+1</td><td>+15</td></tr>
+          <tr><td>16</td><td>근명+1</td><td class="flat">-</td><td>+16</td></tr>
+          <tr class="up"><td>17</td><td>근댐+1,근명+1</td><td>+2</td><td>+17</td></tr>
+          <tr><td>18</td><td>근명+1</td><td class="flat">-</td><td>+18</td></tr>
+          <tr class="up"><td>19</td><td>근댐+1,근명+1</td><td>+3</td><td>+19</td></tr>
+          <tr><td>20</td><td>근명+1</td><td class="flat">-</td><td>+20</td></tr>
+          <tr class="up"><td>21</td><td>근댐+1,근명+1</td><td>+4</td><td>+21</td></tr>
+          <tr><td>22</td><td>근명+1</td><td class="flat">-</td><td>+22</td></tr>
+          <tr class="up"><td>23</td><td>근댐+1,근명+1</td><td>+5</td><td>+23</td></tr>
+          <tr><td>24</td><td>근명+1</td><td class="flat">-</td><td>+24</td></tr>
+          <tr class="up"><td>25</td><td>근댐+1,근명+1</td><td>+6</td><td>+25</td></tr>
+          <tr><td>26</td><td>근명+1</td><td class="flat">-</td><td>+26</td></tr>
+          <tr class="up"><td>27</td><td>근댐+1,근명+1</td><td>+7</td><td>+27</td></tr>
+          <tr><td>28</td><td>근명+1</td><td class="flat">-</td><td>+28</td></tr>
+          <tr class="up"><td>29</td><td>근댐+1,근명+1</td><td>+8</td><td>+29</td></tr>
+          <tr><td>30</td><td>근명+1</td><td class="flat">-</td><td>+30</td></tr>
+          <tr class="up"><td>31</td><td>근댐+1,근명+1</td><td>+9</td><td>+31</td></tr>
+          <tr><td>32</td><td>근명+1</td><td class="flat">-</td><td>+32</td></tr>
+          <tr class="up"><td>33</td><td>근댐+1,근명+1</td><td>+10</td><td>+33</td></tr>
+          <tr><td>34</td><td>근명+1</td><td class="flat">-</td><td>+34</td></tr>
+          <tr class="up"><td>35</td><td>근댐+1,근명+1</td><td>+11</td><td>+35</td></tr>
+          <tr><td>36</td><td>근명+1</td><td class="flat">-</td><td>+36</td></tr>
+          <tr class="up"><td>37</td><td>근댐+1,근명+1</td><td>+12</td><td>+37</td></tr>
+          <tr><td>38</td><td>근명+1</td><td class="flat">-</td><td>+38</td></tr>
+          <tr class="up"><td>39</td><td>근댐+1,근명+1</td><td>+13</td><td>+39</td></tr>
+          <tr><td>40</td><td>근명+1</td><td class="flat">-</td><td>+40</td></tr>
+          <tr class="up"><td>41</td><td>근댐+1,근명+1</td><td>+14</td><td>+41</td></tr>
+          <tr><td>42</td><td>근명+1</td><td class="flat">-</td><td>+42</td></tr>
+          <tr class="up"><td>43</td><td>근댐+1,근명+1</td><td>+15</td><td>+43</td></tr>
+          <tr><td>44</td><td>근명+1</td><td class="flat">-</td><td>+44</td></tr>
+          <tr class="up"><td>45</td><td>근댐+1,근명+1</td><td>+16</td><td>+45</td></tr>
+          <tr><td>46</td><td>근명+1</td><td class="flat">-</td><td>+46</td></tr>
+          <tr class="up"><td>47</td><td>근댐+1,근명+1</td><td>+17</td><td>+47</td></tr>
+          <tr><td>48</td><td>근명+1</td><td class="flat">-</td><td>+48</td></tr>
+          <tr class="up"><td>49</td><td>근댐+1,근명+1</td><td>+18</td><td>+49</td></tr>
+          <tr><td>50</td><td>근명+1</td><td class="flat">-</td><td>+50</td></tr>
         </tbody>
       </table>
     </div>
