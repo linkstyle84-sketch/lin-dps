@@ -709,27 +709,32 @@
         statLine('1단계 인형', stat[1]) +
         statLine('2단계 인형', stat[2]) +
         statLine('전체', { n: totalN, win: totalWin });
+      var used1 = 3 * stat[1].n + stat[1].win;
+      var left1 = pouchCount - used1;
+      if (left1 < 0) left1 = 0;
       var used2 = 3 * stat[2].n + stat[2].win;
       var left2 = stat[1].win - used2;
       if (left2 < 0) left2 = 0;
+      var worth1 = left1 * POUCH_COST;
       var worth2 = left2 * expect2;
       var worth3 = stat[2].win * expect3;
-      var worth = worth2 + worth3;
+      var worth = worth1 + worth2 + worth3;
       var diff = worth - spent;
       var diffClass = diff > 0 ? 'plus' : diff < 0 ? 'minus' : '';
       var diffText = (diff > 0 ? '+' : diff < 0 ? '-' : '') + adenaText(Math.abs(diff));
       var ratioText = spent > 0 ? (worth / spent * 100).toFixed(1) + '%' : '-';
-      var stage2Label = '2단계 인형 ' + stat[1].win + '개';
-      if (used2 > 0) stage2Label += ' (재료 ' + used2 + '개 제외, ' + left2 + '개)';
+      var stage2Label = '2단계 인형 ' + left2 + '개';
+      if (used2 > 0) stage2Label = '2단계 인형 ' + stat[1].win + '개 (재료 ' + used2 + '개 제외, ' + left2 + '개)';
       document.getElementById('reportValue').innerHTML =
         '<div class="stat"><span>사용 금액</span><b>' + adenaText(spent) + '</b></div>' +
+        '<div class="stat"><span>1단계 인형 ' + left1 + '개</span><b>' + adenaText(POUCH_COST) + ' × ' + left1 + ' = ' + adenaText(worth1) + '</b></div>' +
         '<div class="stat"><span>' + stage2Label + '</span><b>' + adenaText(expect2) + ' × ' + left2 + ' = ' + adenaText(worth2) + '</b></div>' +
         '<div class="stat"><span>3단계 인형 ' + stat[2].win + '개</span><b>' + adenaText(expect3) + ' × ' + stat[2].win + ' = ' + adenaText(worth3) + '</b></div>' +
         '<div class="stat"><span>인형 기댓값 합계</span><b>' + adenaText(worth) + '</b></div>' +
         '<div class="stat result"><span>결과값</span><b class="' + diffClass + '">' + diffText + '</b></div>' +
         '<div class="stat"><span>사용 금액 대비</span><b class="' + diffClass + '">' + ratioText + '</b></div>';
       document.getElementById('reportNote').textContent =
-        '결과값은 얻은 인형 기댓값 합계에서 지금까지 쓴 금액을 뺀 값입니다. 2단계 1개는 ' + adenaText(expect2) + '아덴, 3단계 1개는 ' + adenaText(expect3) + '아덴입니다. 3단계 재료로 쓴 2단계는 합계에서 빼서 같은 인형이 두 번 들어가지 않습니다.';
+        '결과값은 남은 인형 기댓값 합계에서 지금까지 쓴 금액을 뺀 값입니다. 1단계로 남은 인형은 1개당 220,000아덴, 2단계는 ' + adenaText(expect2) + '아덴, 3단계는 ' + adenaText(expect3) + '아덴입니다. 합성 재료로 쓴 인형은 남은 개수에서 뺍니다.';
       document.getElementById('report').hidden = false;
     }
 
