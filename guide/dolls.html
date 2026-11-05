@@ -136,6 +136,27 @@
       color:#f7f4ee; font-weight:900; font-size:clamp(12px, 1.7cqi, 18px); line-height:1;
       letter-spacing:.02em; pointer-events:none; text-shadow:0 1px 2px rgba(0,0,0,.9);
     }
+    .adena {
+      position:absolute; left:8%; top:46.2%; width:36%;
+      display:flex; align-items:center; justify-content:center; gap:8px;
+      pointer-events:none; z-index:3;
+    }
+    .adena img { height:3.8cqi; width:auto; flex:0 0 auto; image-rendering:pixelated; }
+    .adena canvas { height:3.1cqi; width:auto; flex:0 0 auto; image-rendering:pixelated; }
+    .report-btn {
+      position:absolute; left:10%; top:51.2%; width:32%; height:5.4%; z-index:3;
+      border:1px solid rgba(226,196,122,.8); border-radius:8px; cursor:pointer;
+      background:linear-gradient(#4a4034, #221c16); color:#f6e7c2; font:inherit; font-weight:900;
+      font-size:clamp(11px, 1.7cqi, 16px); letter-spacing:.04em;
+      text-shadow:0 1px 1px #000; box-shadow:inset 0 1px 0 rgba(255,255,255,.2), 0 2px 4px rgba(0,0,0,.45);
+    }
+    .report-btn:hover { filter:brightness(1.12); }
+    .report-card { width:min(520px,100%); }
+    .adena-line { display:flex; align-items:center; gap:8px; margin:4px 0 2px; }
+    .adena-line img { height:22px; width:auto; image-rendering:pixelated; }
+    .adena-line canvas { height:18px; width:auto; image-rendering:pixelated; }
+    .stat { display:flex; justify-content:space-between; gap:10px; padding:3px 0; font-size:13px; font-weight:800; }
+    .stat b { color:#f4e2a4; font-weight:900; white-space:nowrap; }
     .slot, .hot {
       position:absolute; display:flex; align-items:center; justify-content:center; cursor:pointer;
     }
@@ -192,6 +213,8 @@
         <div class="win" id="board">
           <img class="frame" src="dolls/board.png" alt="마법인형 합성과 인벤토리">
           <div id="tries">x0</div>
+          <div class="adena" id="adena"><img src="dolls/adena-mark.png" alt=""><canvas id="adenaNum"></canvas></div>
+          <button type="button" class="report-btn" id="reportBtn">결과 보고서</button>
         </div>
       </div>
       <p class="msg" id="msg"></p>
@@ -258,6 +281,21 @@
     </div>
   </div>
 
+  <div class="sheet" id="report" hidden>
+    <div class="sheet-card report-card">
+      <h3>결과 보고서</h3>
+      <p class="split">사용 금액</p>
+      <div class="adena-line" id="reportAdena"></div>
+      <p class="empty" id="reportPouch"></p>
+      <p class="split">합성 시도</p>
+      <div id="reportTries"></div>
+      <p class="split">얻은 인형의 기댓값</p>
+      <div id="reportValue"></div>
+      <p class="empty" id="reportNote"></p>
+      <button type="button" id="reportClose">닫기</button>
+    </div>
+  </div>
+
   <div class="prize" id="prize" hidden>
     <div class="prize-card">
       <div class="prize-banner" id="prizeBanner"></div>
@@ -307,8 +345,66 @@
     inv[0] = { id: 'pouch', qty: 1 };
     var craft = new Array(8).fill(null);
     var msg = document.getElementById('msg');
+    var POUCH_COST = 220000;
+    var spent = 0;
+    var pouchCount = 0;
+    var stat = { 1: { n: 0, win: 0 }, 2: { n: 0, win: 0 } };
+    var DIGIT = {
+      '0': ['011110', '100001', '100001', '100001', '100001', '100001', '100001', '100001', '011110'],
+      '1': ['001100', '011100', '001100', '001100', '001100', '001100', '001100', '001100', '011110'],
+      '2': ['011110', '100001', '000001', '000011', '000110', '001100', '011000', '110000', '111111'],
+      '3': ['011110', '100001', '000001', '000001', '011110', '000001', '000001', '100001', '011110'],
+      '4': ['000110', '001110', '011110', '110110', '100110', '111111', '000110', '000110', '000110'],
+      '5': ['111111', '100000', '100000', '111110', '000001', '000001', '000001', '100001', '011110'],
+      '6': ['001110', '010000', '100000', '111110', '100001', '100001', '100001', '100001', '011110'],
+      '7': ['111111', '000001', '000011', '000110', '001100', '001100', '001100', '001100', '001100'],
+      '8': ['011110', '100001', '100001', '100001', '011110', '100001', '100001', '100001', '011110'],
+      '9': ['011110', '100001', '100001', '100001', '011111', '000001', '000001', '000010', '011100'],
+      ',': ['00', '00', '00', '00', '00', '00', '01', '01', '10']
+    };
 
     function say(text) { msg.textContent = text || ''; }
+
+    function paintAdenaCanvas(canvas, amount) {
+      var text = Number(amount).toLocaleString('en-US');
+      var scale = 2;
+      var glyphs = [];
+      var width = 0;
+      var height = 0;
+      for (var i = 0; i < text.length; i++) {
+        var rows = DIGIT[text.charAt(i)] || DIGIT['0'];
+        glyphs.push(rows);
+        width += rows[0].length * scale + scale;
+        height = rows.length * scale;
+      }
+      canvas.width = Math.max(width, 1);
+      canvas.height = height;
+      var ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      var x = 0;
+      glyphs.forEach(function (rows) {
+        for (var yy = 0; yy < rows.length; yy++) {
+          for (var xx = 0; xx < rows[yy].length; xx++) {
+            if (rows[yy].charAt(xx) !== '1') continue;
+            ctx.fillStyle = 'rgba(0,0,0,.65)';
+            ctx.fillRect(x + xx * scale + 1, yy * scale + 1, scale, scale);
+            ctx.fillStyle = '#f7f7f7';
+            ctx.fillRect(x + xx * scale, yy * scale, scale, scale);
+          }
+        }
+        x += rows[0].length * scale + scale;
+      });
+    }
+
+    function expectOne(rate, materialCost) {
+      return (3 + rate) / rate * materialCost;
+    }
+    var expect2 = expectOne(0.4, POUCH_COST);
+    var expect3 = expectOne(0.3, expect2);
+
+    function adenaText(amount) {
+      return Math.round(amount).toLocaleString('en-US');
+    }
 
     function findInv(id) {
       for (var i = 1; i < inv.length; i++) if (inv[i] && inv[i].id === id) return i;
@@ -442,12 +538,15 @@
       invBoxes.forEach(function (box, i) { paint(box, inv[i]); });
       craftBoxes.forEach(function (box, i) { paint(box, craft[i]); });
       document.getElementById('tries').textContent = 'x' + Math.floor(craftCount() / 4);
+      paintAdenaCanvas(document.getElementById('adenaNum'), spent);
     }
 
     function onInv(index) {
       if (index === 0) {
         var pick = STAGES[1][Math.floor(Math.random() * STAGES[1].length)];
         if (!addInv(pick[0], 1)) { say('인벤토리가 가득 찼습니다.'); return; }
+        spent += POUCH_COST;
+        pouchCount += 1;
         say(pick[1] + '을 얻었습니다.');
         render();
         return;
@@ -523,13 +622,17 @@
       consume(times * 4);
       var successRate = stage === 1 ? 0.4 : 0.3;
       var got = [];
+      var wins = 0;
       for (var n = 0; n < times; n++) {
         var win = Math.random() < successRate;
+        if (win) wins += 1;
         var pool = STAGES[win ? stage + 1 : stage];
         var pick = pool[Math.floor(Math.random() * pool.length)];
         got.push({ id: pick[0], win: win, from: stage });
         addInv(pick[0], 1);
       }
+      stat[stage].n += times;
+      stat[stage].win += wins;
       say('');
       render();
       if (times === 1) showPrize(got[0]);
@@ -582,12 +685,46 @@
       document.getElementById('sheet').hidden = false;
     }
 
+    function rateText(win, n) {
+      if (!n) return '-';
+      return (win / n * 100).toFixed(1) + '%';
+    }
+    function statLine(label, row) {
+      var fail = row.n - row.win;
+      return '<div class="stat"><span>' + label + '</span><b>시도 ' + row.n + ' · 성공 ' + row.win + ' · 실패 ' + fail + ' · ' + rateText(row.win, row.n) + '</b></div>';
+    }
+    function showReport() {
+      var box = document.getElementById('reportAdena');
+      box.innerHTML = '<img src="dolls/adena-mark.png" alt=""><canvas id="reportNum"></canvas>';
+      paintAdenaCanvas(document.getElementById('reportNum'), spent);
+      document.getElementById('reportPouch').textContent = '아르카 주머니 ' + pouchCount + '회 × 220,000';
+      var totalN = stat[1].n + stat[2].n;
+      var totalWin = stat[1].win + stat[2].win;
+      document.getElementById('reportTries').innerHTML =
+        statLine('1단계 인형', stat[1]) +
+        statLine('2단계 인형', stat[2]) +
+        statLine('전체', { n: totalN, win: totalWin });
+      var worth2 = stat[1].win * expect2;
+      var worth3 = stat[2].win * expect3;
+      document.getElementById('reportValue').innerHTML =
+        '<div class="stat"><span>2단계 인형 ' + stat[1].win + '개</span><b>' + adenaText(expect2) + ' × ' + stat[1].win + ' = ' + adenaText(worth2) + '</b></div>' +
+        '<div class="stat"><span>3단계 인형 ' + stat[2].win + '개</span><b>' + adenaText(expect3) + ' × ' + stat[2].win + ' = ' + adenaText(worth3) + '</b></div>';
+      document.getElementById('reportNote').textContent =
+        '2단계 1개의 기댓값은 ' + adenaText(expect2) + '아덴입니다. 주머니 1개 220,000아덴, 성공 확률 40%, 실패 시 같은 단계 인형 1개 반환을 반영하면 1단계 인형 8.5개 분량입니다. 3단계 1개는 그 2단계 11개 분량인 ' + adenaText(expect3) + '아덴이며, 재료로 쓴 2단계 비용이 이미 포함되어 있습니다. 성공률은 이번 기록의 시도 대비 성공 비율입니다.';
+      document.getElementById('report').hidden = false;
+    }
+
     function resetBoard() {
       for (var i = 0; i < inv.length; i++) inv[i] = null;
       inv[0] = { id: 'pouch', qty: 1 };
       for (var j = 0; j < craft.length; j++) craft[j] = null;
+      spent = 0;
+      pouchCount = 0;
+      stat[1].n = 0; stat[1].win = 0;
+      stat[2].n = 0; stat[2].win = 0;
       say('');
       document.getElementById('sheet').hidden = true;
+      document.getElementById('report').hidden = true;
       prize.hidden = true;
       render();
     }
@@ -599,6 +736,9 @@
     document.getElementById('sheet').addEventListener('click', function (e) { if (e.target.id === 'sheet') document.getElementById('sheet').hidden = true; });
     document.getElementById('prizeClose').addEventListener('click', function () { prize.hidden = true; });
     prize.addEventListener('click', function (e) { if (e.target === prize) prize.hidden = true; });
+    document.getElementById('reportBtn').addEventListener('click', showReport);
+    document.getElementById('reportClose').addEventListener('click', function () { document.getElementById('report').hidden = true; });
+    document.getElementById('report').addEventListener('click', function (e) { if (e.target.id === 'report') document.getElementById('report').hidden = true; });
 
     render();
   </script>
