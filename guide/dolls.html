@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>마법인형 · 도건유튜브</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0c0a08;
+      --ink: #f6edd6;
+      --muted: #cbb994;
+      --gold: #e4c36a;
+      --line: rgba(228, 195, 106, 0.28);
+    }
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      background:
+        radial-gradient(900px 380px at 50% -60px, #3a2410 0%, transparent 62%),
+        var(--bg);
+      color: var(--ink);
+      font-family: "Noto Sans KR", sans-serif;
+    }
+    .wrap {
+      width: min(980px, calc(100% - 28px));
+      margin: 0 auto;
+      padding: 36px 0 64px;
+    }
+    .preview {
+      display: inline-block;
+      margin: 0 0 14px;
+      padding: 4px 10px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--gold);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.02em;
+    }
+    h1 {
+      margin: 0 0 10px;
+      font-size: 28px;
+      font-weight: 900;
+      letter-spacing: -0.03em;
+    }
+    h2 {
+      margin: 28px 0 10px;
+      color: var(--gold);
+      font-size: 18px;
+      font-weight: 900;
+    }
+    .note {
+      margin: 0 0 18px;
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1.6;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .card {
+      padding: 16px 16px 14px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: rgba(228, 195, 106, 0.06);
+    }
+    .card h2 { margin-top: 0; }
+    .item {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .item img, .doll {
+      width: 56px;
+      height: 56px;
+      object-fit: contain;
+      image-rendering: pixelated;
+      flex: 0 0 auto;
+    }
+    .item strong { display: block; font-size: 15px; }
+    .item span, .rules {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 1.55;
+    }
+    .rules { margin: 0; padding-left: 18px; }
+    .rules li { margin: 4px 0; }
+    .scroll {
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: rgba(228, 195, 106, 0.06);
+    }
+    table { width: 100%; border-collapse: collapse; font-size: 14px; font-weight: 800; }
+    th, td {
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: middle;
+    }
+    tr:last-child td { border-bottom: 0; }
+    th {
+      color: var(--gold);
+      font-weight: 900;
+      background: rgba(12, 10, 8, 0.45);
+    }
+    td.num, th.num { text-align: center; white-space: nowrap; }
+    .name { display: flex; align-items: center; gap: 10px; white-space: nowrap; }
+    .fx { color: var(--ink); line-height: 1.45; }
+    .sub { display: block; margin-top: 2px; color: var(--muted); font-size: 12px; font-weight: 700; }
+    .src { margin: 22px 0 0; color: var(--muted); font-size: 12px; font-weight: 700; }
+    @media (max-width: 760px) {
+      .grid { grid-template-columns: 1fr; }
+    }
+  .back { margin: 0 0 18px; }
+    .back a { color: var(--gold); font-weight: 800; text-decoration: none; }
+    .back a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <p class="back"><a href="./">처음으로</a></p>
+    <h1>마법인형</h1>
+    <p class="note">소환하는 동안 캐릭터 곁에 머물며 효과를 줍니다. 캐릭터당 1개만 소환할 수 있고, 소환석 1개로 30분 유지됩니다. 사망, 로그아웃, 다른 인형으로 바꾸면 소환이 풀립니다.</p>
+
+    <div class="grid">
+      <section class="card">
+        <h2>획득</h2>
+        <div class="item">
+          <img src="dolls/pouch.png" alt="">
+          <div>
+            <strong>아르카의 마법인형 주머니</strong>
+            <span>사용하면 1단계 6종 중 1개를 얻습니다. 기란 마을 마법인형 상인 아르카에게 구매합니다. 사망 드롭 O, 교환 O, 삭제 O, 창고 O.</span>
+          </div>
+        </div>
+      </section>
+      <section class="card">
+        <h2>소환석</h2>
+        <div class="item">
+          <img src="dolls/stone.png" alt="">
+          <div>
+            <strong>소환석</strong>
+            <span>소환에 쓰는 촉매입니다. 에티, 드레이크, 아이언 골렘, 실루엣 등에서 드롭되고, 기란 소린에게 제작하거나 떠돌이 상인 그로우에게 살 수 있습니다. 그로우는 하루 100개, 한시 등장입니다.</span>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <h2>합성</h2>
+    <p class="note">같은 단계 완제품 4개를 재료로 넣습니다. 성공하면 한 단계 위 인형 1개, 실패하면 재료와 같은 단계 인형 1개를 받습니다. 3단계로 올릴 때는 고급 보석이 1개 더 필요합니다. 안전 지대에서만 되고, 소환 중이거나 봉인 중인 인형과 3단계 인형은 재료로 넣을 수 없습니다.</p>
+    <div class="scroll">
+      <table>
+        <thead>
+          <tr><th>도전</th><th class="num">성공</th><th class="num">실패</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>2단계</td><td class="num">40%</td><td class="num">60%</td></tr>
+          <tr><td>3단계</td><td class="num">30%</td><td class="num">70%</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2>1단계</h2>
+    <p class="note">ATS 등록 가능. 사망 시 드롭 X, 교환 O, 삭제 X, 창고 O.</p>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>인형</th><th>효과</th></tr></thead>
+        <tbody>
+          <tr><td><span class="name"><img class="doll" src="dolls/werewolf.png" alt="">늑대인간</span></td><td class="fx">근거리 / 원거리 대미지 +1</td></tr>
+          <tr><td><span class="name"><img class="doll" src="dolls/crustacean.png" alt="">크러스트시안</span></td><td class="fx">근거리 / 원거리 명중 +1</td></tr>
+          <tr><td><span class="name"><img class="doll" src="dolls/yeti.png" alt="">에티</span></td><td class="fx">AC -1</td></tr>
+          <tr><td><span class="name"><img class="doll" src="dolls/wood.png" alt="">목각</span></td><td class="fx">최대 MP +30</td></tr>
+          <tr><td><span class="name"><img class="doll" src="dolls/bugbear.png" alt="">버그베어</span></td><td class="fx">무게 게이지 +200</td></tr>
+          <tr><td><span class="name"><img class="doll" src="dolls/stonegolem.png" alt="">돌골렘</span></td><td class="fx">최대 HP +50</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2>2단계</h2>
+    <p class="note">1단계와 같습니다. 소환석 1개, 30분, ATS 등록 가능. 사망 시 드롭 X, 교환 O, 삭제 X, 창고 O.</p>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>인형</th><th>효과</th></tr></thead>
+        <tbody>
+          <tr><td><span class="name"><img class="doll" src="dolls/cockatrice.png" alt="">코카트리스</span></td><td class="fx">원거리 대미지 +1, 원거리 명중 +1</td></tr>
+          <tr><td><span class="name"><img class="doll" src="dolls/snowman.png" alt="">눈사람</span></td><td class="fx">근거리 대미지 +1, 근거리 명중 +1</td></tr>
+          <tr><td><span class="name"><img class="doll" src="dolls/succubus.png" alt="">서큐버스</span></td><td class="fx">64초마다 MP 회복 +15</td></tr>
+          <tr><td><span class="name"><img class="doll" src="dolls/elder.png" alt="">장로</span></td><td class="fx">64초마다 MP 회복 +6, SP +1</td></tr>
+          <tr><td><span class="name"><img class="doll" src="dolls/mermaid.png" alt="">인어</span></td><td class="fx">AC -2, 최대 HP +30</td></tr>
+          <tr><td><span class="name"><img class="doll" src="dolls/lavagolem.png" alt="">라바 골렘</span></td><td class="fx">대미지 리덕션 +1</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2>3단계</h2>
+    <p class="note">소환석 1개, 30분, ATS 등록 가능. 사망 시 드롭 X, 교환 O, 삭제 X, 창고 O. 합성 재료로는 쓸 수 없습니다.</p>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>인형</th><th>효과</th></tr></thead>
+        <tbody>
+          <tr><td><span class="name"><img class="doll" src="dolls/drake.png" alt="">드레이크</span></td><td class="fx">원거리 대미지 +2, 원거리 명중 +2</td></tr>
+          <tr><td><span class="name"><img class="doll" src="dolls/kingbugbear.png" alt="">킹 버그베어</span></td><td class="fx">근거리 대미지 +2, 근거리 명중 +2</td></tr>
+          <tr><td><span class="name"><img class="doll" src="dolls/giant.png" alt="">자이언트</span></td><td class="fx">AC -3, 최대 HP +50, 최대 MP +20</td></tr>
+          <tr><td><span class="name"><img class="doll" src="dolls/elderblack.png" alt="">흑장로</span></td><td class="fx">64초마다 MP 회복 +15<span class="sub">공격 시 일정 확률로 콜 라이트닝 발동</span></td></tr>
+          <tr><td><span class="name"><img class="doll" src="dolls/succubusqueen.png" alt="">서큐버스 퀸</span></td><td class="fx">64초마다 MP 회복 +15, SP +1</td></tr>
+          <tr><td><span class="name"><img class="doll" src="dolls/diamond.png" alt="">다이아몬드 골렘</span></td><td class="fx">대미지 리덕션 +2</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p class="src">공식 가이드 2026-10-20 기준. 게임과 다를 수 있습니다.</p>
+  </div>
+</body>
+</html>
