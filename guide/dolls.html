@@ -151,6 +151,7 @@
       text-shadow:0 1px 1px #000; box-shadow:inset 0 1px 0 rgba(255,255,255,.2), 0 2px 4px rgba(0,0,0,.45);
     }
     .report-btn:hover { filter:brightness(1.12); }
+    .reset-btn { left:16.5%; top:41%; width:19%; height:4.4%; }
     .report-card { width:min(520px,100%); }
     .adena-line { display:flex; align-items:center; gap:8px; margin:4px 0 2px; }
     .adena-line img { height:22px; width:auto; image-rendering:pixelated; }
@@ -213,6 +214,7 @@
         <div class="win" id="board">
           <img class="frame" src="dolls/board.png" alt="마법인형 합성과 인벤토리">
           <div id="tries">x0</div>
+          <button type="button" class="report-btn reset-btn" id="resetBtn">초기화</button>
           <div class="adena" id="adena"><img src="dolls/adena-mark.png" alt=""><canvas id="adenaNum"></canvas></div>
           <button type="button" class="report-btn" id="reportBtn">결과 보고서</button>
         </div>
@@ -736,6 +738,7 @@
     document.getElementById('sheet').addEventListener('click', function (e) { if (e.target.id === 'sheet') document.getElementById('sheet').hidden = true; });
     document.getElementById('prizeClose').addEventListener('click', function () { prize.hidden = true; });
     prize.addEventListener('click', function (e) { if (e.target === prize) prize.hidden = true; });
+    document.getElementById('resetBtn').addEventListener('click', resetBoard);
     document.getElementById('reportBtn').addEventListener('click', showReport);
     document.getElementById('reportClose').addEventListener('click', function () { document.getElementById('report').hidden = true; });
     document.getElementById('report').addEventListener('click', function (e) { if (e.target.id === 'report') document.getElementById('report').hidden = true; });
