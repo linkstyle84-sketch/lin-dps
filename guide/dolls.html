@@ -124,19 +124,8 @@
   .back { margin: 0 0 18px; }
     .back a { color: var(--gold); font-weight: 800; text-decoration: none; }
     .back a:hover { text-decoration: underline; }
-    .open {
-      display:block; width:100%; margin:0 0 8px; padding:14px 16px; border:1px solid var(--line); border-radius:16px;
-      background:rgba(228,195,106,.1); color:var(--gold); font:inherit; font-size:16px; font-weight:900; cursor:pointer;
-    }
-    .open:hover { filter:brightness(1.08); }
-    .lab {
-      position:fixed; inset:0; z-index:20; display:flex; flex-direction:column; align-items:center;
-      padding:18px 12px 24px; background:#0c0a08; overflow:auto;
-    }
-    .lab[hidden] { display:none; }
-    .lab-bar { width:min(919px,100%); display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
-    .lab-bar strong { color:var(--gold); font-size:16px; }
-    .lab-bar button, .sheet button, .prize button {
+    .lab { width:100%; margin:0 0 8px; }
+    .sheet button, .prize button {
       border:1px solid var(--line); background:transparent; color:var(--gold); font:inherit; font-weight:800; border-radius:10px; padding:6px 12px; cursor:pointer;
     }
     .wins { width:min(919px,100%); }
@@ -201,7 +190,16 @@
 
     <h2>합성</h2>
     <p class="note">같은 단계 완제품 4개를 재료로 넣습니다. 성공하면 한 단계 위 인형 1개, 실패하면 재료와 같은 단계 인형 1개를 받습니다. 3단계로 올릴 때는 고급 보석이 1개 더 필요합니다. 안전 지대에서만 되고, 소환 중이거나 봉인 중인 인형과 3단계 인형은 재료로 넣을 수 없습니다.</p>
-    <button class="open" id="open" type="button">마법인형 합성 미리 해보기</button>
+    <div class="lab" id="lab">
+      <div class="wins">
+        <div class="win" id="board">
+          <img class="frame" src="dolls/board.png" alt="마법인형 합성과 인벤토리">
+          <div id="tries">x0</div>
+        </div>
+      </div>
+      <p class="msg" id="msg"></p>
+      <p class="hint">주머니를 클릭할 때마다 1단계 인형을 얻습니다. 1·2단계 인형을 클릭하면 합성칸에 쌓이고, 합성칸을 더블클릭하면 인벤토리로 돌아갑니다. 3단계는 재료로 넣을 수 없습니다.</p>
+    </div>
 
     <h2>1단계 마법인형</h2>
     <p class="note">ATS 등록 가능. 사망 시 드롭 X, 교환 O, 삭제 X, 창고 O.</p>
@@ -252,20 +250,6 @@
     </div>
 
     <p class="src">공식 가이드 2026-10-20 기준. 게임과 다를 수 있습니다.</p>
-  </div>
-  <div class="lab" id="lab" hidden>
-    <div class="lab-bar">
-      <strong>마법인형 합성 미리 해보기</strong>
-      <button type="button" id="close">닫기</button>
-    </div>
-    <div class="wins">
-      <div class="win" id="board">
-        <img class="frame" src="dolls/board.png" alt="마법인형 합성과 인벤토리">
-        <div id="tries">x0</div>
-      </div>
-    </div>
-    <p class="msg" id="msg"></p>
-    <p class="hint">주머니를 클릭할 때마다 1단계 인형을 얻습니다. 1·2단계 인형을 클릭하면 합성칸에 쌓이고, 합성칸을 더블클릭하면 인벤토리로 돌아갑니다. 3단계는 재료로 넣을 수 없습니다.</p>
   </div>
 
   <div class="sheet" id="sheet" hidden>
@@ -611,14 +595,9 @@
       render();
     }
 
-    document.getElementById('open').addEventListener('click', function () {
-      resetBoard();
-      document.getElementById('lab').hidden = false;
-    });
     window.addEventListener('pageshow', function (e) {
       if (e.persisted) resetBoard();
     });
-    document.getElementById('close').addEventListener('click', function () { document.getElementById('lab').hidden = true; });
     document.getElementById('sheetClose').addEventListener('click', function () { document.getElementById('sheet').hidden = true; });
     document.getElementById('sheet').addEventListener('click', function (e) { if (e.target.id === 'sheet') document.getElementById('sheet').hidden = true; });
     document.getElementById('prizeClose').addEventListener('click', function () { prize.hidden = true; });
