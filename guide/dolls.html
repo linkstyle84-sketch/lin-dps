@@ -124,6 +124,73 @@
   .back { margin: 0 0 18px; }
     .back a { color: var(--gold); font-weight: 800; text-decoration: none; }
     .back a:hover { text-decoration: underline; }
+    .open {
+      display:block; width:100%; margin:0 0 8px; padding:14px 16px; border:1px solid var(--line); border-radius:16px;
+      background:rgba(228,195,106,.1); color:var(--gold); font:inherit; font-size:16px; font-weight:900; cursor:pointer;
+    }
+    .open:hover { filter:brightness(1.08); }
+    .lab {
+      position:fixed; inset:0; z-index:20; display:flex; flex-direction:column; align-items:center;
+      padding:18px 12px 24px; background:#0c0a08; overflow:auto;
+    }
+    .lab[hidden] { display:none; }
+    .lab-bar { width:min(919px,100%); display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
+    .lab-bar strong { color:var(--gold); font-size:16px; }
+    .lab-bar button, .sheet button, .prize button {
+      border:1px solid var(--line); background:transparent; color:var(--gold); font:inherit; font-weight:800; border-radius:10px; padding:6px 12px; cursor:pointer;
+    }
+    .wins { width:min(919px,100%); }
+    .win { position:relative; width:100%; user-select:none; container-type:inline-size; }
+    .win img.frame { display:block; width:100%; height:auto; }
+    #tries {
+      position:absolute; left:27.2%; top:25.7%; transform:translate(-50%,-50%);
+      color:#f7f4ee; font-weight:900; font-size:clamp(12px, 1.7cqi, 18px); line-height:1;
+      letter-spacing:.02em; pointer-events:none; text-shadow:0 1px 2px rgba(0,0,0,.9);
+    }
+    .slot, .hot {
+      position:absolute; display:flex; align-items:center; justify-content:center; cursor:pointer;
+    }
+    .slot img { width:78%; height:78%; object-fit:contain; image-rendering:pixelated; pointer-events:none; }
+    .qty {
+      position:absolute; right:3px; bottom:1px; color:#fff8dc; font-size:12px; font-weight:900;
+      text-shadow:0 1px 2px #000, 0 0 4px #000; pointer-events:none;
+    }
+    .msg { width:min(919px,100%); min-height:22px; margin:8px 0 0; color:var(--gold); font-size:13px; font-weight:800; text-align:center; }
+    .hint { width:min(919px,100%); margin:6px 0 0; color:var(--muted); font-size:12px; font-weight:700; text-align:center; line-height:1.5; }
+    .sheet, .prize {
+      position:fixed; inset:0; z-index:40; display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,.72); padding:18px;
+    }
+    .sheet[hidden], .prize[hidden] { display:none; }
+    .sheet-card {
+      width:min(420px,100%); max-height:min(86vh,640px); overflow:auto; padding:16px 16px 14px;
+      border:1px solid rgba(228,195,106,.45); border-radius:8px;
+      background:linear-gradient(180deg,#2a2826,#141311); box-shadow:0 18px 50px rgba(0,0,0,.55);
+    }
+    .sheet-card h3 { margin:0 0 10px; font-size:16px; font-weight:900; }
+    .rate { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:3px 0; font-size:13px; font-weight:800; }
+    .rate .who { display:flex; align-items:center; gap:8px; }
+    .rate .who img { width:32px; height:32px; object-fit:contain; image-rendering:pixelated; }
+    .rate b { color:#f4e2a4; font-weight:900; }
+    .rate.up b { color:#f0d78a; }
+    .split { margin:12px 0 4px; padding-bottom:4px; border-bottom:1px solid rgba(228,195,106,.28); color:var(--gold); font-size:13px; font-weight:900; }
+    .split:first-child { margin-top:0; }
+    .split.fail { color:#e7d7c2; }
+    .empty { margin:2px 0 6px; color:var(--muted); font-size:12px; font-weight:700; }
+    .sum { margin:12px 0; padding-top:8px; border-top:1px solid rgba(228,195,106,.35); color:var(--gold); font-weight:900; }
+    .prize-card { position:relative; width:min(420px,100%); text-align:center; }
+    .prize-banner {
+      position:relative; margin:0 0 10px; font-size:40px; font-weight:900; letter-spacing:.06em; line-height:1.15;
+      color:#ffe56a; text-shadow:0 0 18px rgba(255,214,80,.9), 0 3px 0 #6a4300;
+    }
+    .prize.fail .prize-banner { color:#ff9d9d; text-shadow:0 0 18px rgba(255,70,70,.85), 0 3px 0 #6a1414; }
+    .prize-doll {
+      position:relative; width:168px; height:168px; object-fit:contain; image-rendering:pixelated;
+      filter:drop-shadow(0 0 16px rgba(255,210,90,.85)); animation:pop .45s ease;
+    }
+    .prize.fail .prize-doll { filter:drop-shadow(0 0 14px rgba(140,180,255,.7)); }
+    .prize h3 { position:relative; margin:8px 0 4px; font-size:26px; font-weight:900; color:#ffe7a3; }
+    .prize p { position:relative; margin:0 0 14px; color:var(--ink); font-weight:800; }
+    @keyframes pop { from { transform:scale(.2); opacity:0; } to { transform:scale(1); opacity:1; } }
   </style>
 </head>
 <body>
@@ -134,19 +201,9 @@
 
     <h2>합성</h2>
     <p class="note">같은 단계 완제품 4개를 재료로 넣습니다. 성공하면 한 단계 위 인형 1개, 실패하면 재료와 같은 단계 인형 1개를 받습니다. 3단계로 올릴 때는 고급 보석이 1개 더 필요합니다. 안전 지대에서만 되고, 소환 중이거나 봉인 중인 인형과 3단계 인형은 재료로 넣을 수 없습니다.</p>
-    <div class="scroll">
-      <table>
-        <thead>
-          <tr><th>도전</th><th class="num">성공</th><th class="num">실패</th></tr>
-        </thead>
-        <tbody>
-          <tr><td>2단계</td><td class="num">40%</td><td class="num">60%</td></tr>
-          <tr><td>3단계</td><td class="num">30%</td><td class="num">70%</td></tr>
-        </tbody>
-      </table>
-    </div>
+    <button class="open" id="open" type="button">마법인형 합성 미리 해보기</button>
 
-    <h2>1단계</h2>
+    <h2>1단계 마법인형</h2>
     <p class="note">ATS 등록 가능. 사망 시 드롭 X, 교환 O, 삭제 X, 창고 O.</p>
     <div class="scroll">
       <table>
@@ -162,7 +219,7 @@
       </table>
     </div>
 
-    <h2>2단계</h2>
+    <h2>2단계 마법인형</h2>
     <p class="note">1단계와 같습니다. 소환석 1개, 30분, ATS 등록 가능. 사망 시 드롭 X, 교환 O, 삭제 X, 창고 O.</p>
     <div class="scroll">
       <table>
@@ -178,7 +235,7 @@
       </table>
     </div>
 
-    <h2>3단계</h2>
+    <h2>3단계 마법인형</h2>
     <p class="note">소환석 1개, 30분, ATS 등록 가능. 사망 시 드롭 X, 교환 O, 삭제 X, 창고 O. 합성 재료로는 쓸 수 없습니다.</p>
     <div class="scroll">
       <table>
@@ -196,5 +253,378 @@
 
     <p class="src">공식 가이드 2026-10-20 기준. 게임과 다를 수 있습니다.</p>
   </div>
+  <div class="lab" id="lab" hidden>
+    <div class="lab-bar">
+      <strong>마법인형 합성 미리 해보기</strong>
+      <button type="button" id="close">닫기</button>
+    </div>
+    <div class="wins">
+      <div class="win" id="board">
+        <img class="frame" src="dolls/board.png" alt="마법인형 합성과 인벤토리">
+        <div id="tries">x0</div>
+      </div>
+    </div>
+    <p class="msg" id="msg"></p>
+    <p class="hint">주머니를 클릭할 때마다 1단계 인형을 얻습니다. 1·2단계 인형을 클릭하면 합성칸에 쌓이고, 합성칸을 더블클릭하면 인벤토리로 돌아갑니다. 3단계는 재료로 넣을 수 없습니다.</p>
+  </div>
+
+  <div class="sheet" id="sheet" hidden>
+    <div class="sheet-card">
+      <h3 id="sheetTitle"></h3>
+      <div id="sheetRows"></div>
+      <p class="sum" id="sheetSum"></p>
+      <button type="button" id="sheetClose">닫기</button>
+    </div>
+  </div>
+
+  <div class="prize" id="prize" hidden>
+    <div class="prize-card">
+      <div class="prize-banner" id="prizeBanner"></div>
+      <img class="prize-doll" id="prizeImg" alt="">
+      <h3 id="prizeName"></h3>
+      <p id="prizeKind"></p>
+      <div id="prizeMany"></div>
+      <button type="button" id="prizeClose">확인</button>
+    </div>
+  </div>
+
+  <script>
+    var STAGES = {
+      1: [
+        ['werewolf', '늑대인간'],
+        ['crustacean', '크러스트시안'],
+        ['yeti', '에티'],
+        ['wood', '목각'],
+        ['bugbear', '버그베어'],
+        ['stonegolem', '돌골렘']
+      ],
+      2: [
+        ['cockatrice', '코카트리스'],
+        ['snowman', '눈사람'],
+        ['succubus', '서큐버스'],
+        ['elder', '장로'],
+        ['mermaid', '인어'],
+        ['lavagolem', '라바 골렘']
+      ],
+      3: [
+        ['drake', '드레이크'],
+        ['kingbugbear', '킹 버그베어'],
+        ['giant', '자이언트'],
+        ['elderblack', '흑장로'],
+        ['succubusqueen', '서큐버스 퀸'],
+        ['diamond', '다이아몬드 골렘']
+      ]
+    };
+    var ALL = { pouch: { name: '아르카의 마법인형 주머니', stage: 0, img: 'dolls/pouch.png' } };
+    Object.keys(STAGES).forEach(function (stage) {
+      STAGES[stage].forEach(function (pair) {
+        ALL[pair[0]] = { name: pair[1], stage: Number(stage), img: 'dolls/' + pair[0] + '.png' };
+      });
+    });
+
+    var inv = new Array(32).fill(null);
+    inv[0] = { id: 'pouch', qty: 1 };
+    var craft = new Array(8).fill(null);
+    var msg = document.getElementById('msg');
+
+    function say(text) { msg.textContent = text || ''; }
+
+    function findInv(id) {
+      for (var i = 1; i < inv.length; i++) if (inv[i] && inv[i].id === id) return i;
+      return -1;
+    }
+    function emptyInv() {
+      for (var i = 1; i < inv.length; i++) if (!inv[i]) return i;
+      return -1;
+    }
+    function addInv(id, qty) {
+      var at = findInv(id);
+      if (at >= 0) { inv[at].qty += qty; return true; }
+      var blank = emptyInv();
+      if (blank < 0) return false;
+      inv[blank] = { id: id, qty: qty };
+      return true;
+    }
+    function countStage(stage) {
+      var n = 0;
+      for (var i = 1; i < inv.length; i++) if (inv[i] && ALL[inv[i].id].stage === stage) n += inv[i].qty;
+      return n;
+    }
+    function craftStage() {
+      for (var i = 0; i < craft.length; i++) if (craft[i]) return ALL[craft[i].id].stage;
+      return 0;
+    }
+    function craftCount() {
+      var n = 0;
+      for (var i = 0; i < craft.length; i++) if (craft[i]) n += craft[i].qty;
+      return n;
+    }
+    function putCraft(id, qty) {
+      for (var i = 0; i < craft.length; i++) {
+        if (craft[i] && craft[i].id === id) { craft[i].qty += qty; return true; }
+      }
+      for (var j = 0; j < craft.length; j++) {
+        if (!craft[j]) { craft[j] = { id: id, qty: qty }; return true; }
+      }
+      return false;
+    }
+
+    function slotBox(parent, x, y, w, h, fn, eventName) {
+      var el = document.createElement('div');
+      el.className = 'slot';
+      el.style.left = (x / parent.w * 100) + '%';
+      el.style.top = (y / parent.h * 100) + '%';
+      el.style.width = (w / parent.w * 100) + '%';
+      el.style.height = (h / parent.h * 100) + '%';
+      el.addEventListener(eventName || 'dblclick', function (e) {
+        if (eventName === 'pointerdown' && e.button !== 0) return;
+        fn();
+      });
+      return el;
+    }
+
+    var board = document.getElementById('board');
+    var invBoxes = [];
+    var craftBoxes = [];
+    var boardSpec = { w: 919, h: 723 };
+    var invXs = [533, 612, 691, 769];
+    var invYs = [44, 123, 207, 287, 364, 440, 516, 592];
+    var craftXs = [66, 144, 221, 299];
+    var craftYs = [490, 570];
+
+    var n = 0;
+    invYs.forEach(function (y) {
+      invXs.forEach(function (x) {
+        var index = n++;
+        var box = slotBox(boardSpec, x, y, 68, 66, function () { onInv(index); }, 'pointerdown');
+        board.appendChild(box);
+        invBoxes.push(box);
+      });
+    });
+    n = 0;
+    craftYs.forEach(function (y) {
+      craftXs.forEach(function (x) {
+        var index = n++;
+        var box = slotBox(boardSpec, x, y, 68, 68, function () { onCraft(index); });
+        board.appendChild(box);
+        craftBoxes.push(box);
+      });
+    });
+
+    function hot(x, y, w, h, fn) {
+      var el = document.createElement('div');
+      el.className = 'hot';
+      el.style.left = (x / boardSpec.w * 100) + '%';
+      el.style.top = (y / boardSpec.h * 100) + '%';
+      el.style.width = (w / boardSpec.w * 100) + '%';
+      el.style.height = (h / boardSpec.h * 100) + '%';
+      el.addEventListener('click', fn);
+      board.appendChild(el);
+    }
+    hot(20, 678, 80, 40, function () { showRates(craftStage() || 1); });
+    hot(190, 675, 155, 44, autoFill);
+    hot(345, 675, 110, 44, synthesize);
+
+    function paint(box, item) {
+      box.innerHTML = '';
+      if (!item) return;
+      var info = ALL[item.id];
+      var img = document.createElement('img');
+      img.src = info.img;
+      img.alt = info.name;
+      box.appendChild(img);
+      if (item.id !== 'pouch') {
+        var q = document.createElement('span');
+        q.className = 'qty';
+        q.textContent = String(item.qty);
+        box.appendChild(q);
+      }
+      box.title = info.name + (item.id === 'pouch' ? '' : ' ' + item.qty);
+    }
+    function packInv() {
+      var items = [];
+      var seen = {};
+      for (var i = 1; i < inv.length; i++) {
+        var item = inv[i];
+        if (!item) continue;
+        if (seen[item.id] != null) items[seen[item.id]].qty += item.qty;
+        else {
+          seen[item.id] = items.length;
+          items.push({ id: item.id, qty: item.qty });
+        }
+      }
+      for (var j = 1; j < inv.length; j++) inv[j] = null;
+      for (var k = 0; k < items.length; k++) inv[k + 1] = items[k];
+    }
+    function render() {
+      packInv();
+      invBoxes.forEach(function (box, i) { paint(box, inv[i]); });
+      craftBoxes.forEach(function (box, i) { paint(box, craft[i]); });
+      document.getElementById('tries').textContent = 'x' + Math.floor(craftCount() / 4);
+    }
+
+    function onInv(index) {
+      if (index === 0) {
+        var pick = STAGES[1][Math.floor(Math.random() * STAGES[1].length)];
+        if (!addInv(pick[0], 1)) { say('인벤토리가 가득 찼습니다.'); return; }
+        say(pick[1] + '을 얻었습니다.');
+        render();
+        return;
+      }
+      var item = inv[index];
+      if (!item) return;
+      var stage = ALL[item.id].stage;
+      if (stage === 3) { say('3단계 인형은 재료로 넣을 수 없습니다.'); return; }
+      var have = craftStage();
+      if (have && have !== stage) { say('같은 단계 인형만 함께 넣을 수 있습니다.'); return; }
+      if (!putCraft(item.id, 1)) { say('합성칸이 가득 찼습니다.'); return; }
+      item.qty -= 1;
+      if (item.qty <= 0) inv[index] = null;
+      say('');
+      render();
+    }
+    function onCraft(index) {
+      var item = craft[index];
+      if (!item) return;
+      if (!addInv(item.id, item.qty)) { say('인벤토리가 가득 찼습니다.'); return; }
+      craft[index] = null;
+      say('');
+      render();
+    }
+
+    function takeFromInv(stage, need) {
+      var moved = [];
+      for (var i = 1; i < inv.length && need > 0; i++) {
+        var item = inv[i];
+        if (!item || ALL[item.id].stage !== stage) continue;
+        var take = Math.min(item.qty, need);
+        if (!putCraft(item.id, take)) break;
+        item.qty -= take;
+        need -= take;
+        moved.push(item.id);
+        if (item.qty <= 0) inv[i] = null;
+      }
+      return moved.length > 0;
+    }
+    function autoFill() {
+      var stage = craftStage();
+      if (!stage) {
+        if (countStage(1) >= 4) stage = 1;
+        else if (countStage(2) >= 4) stage = 2;
+        else { say('4개 이상 모인 1단계나 2단계 인형이 없습니다.'); return; }
+      }
+      if (stage === 3) { say('3단계 인형은 재료로 넣을 수 없습니다.'); return; }
+      var target = Math.floor((craftCount() + countStage(stage)) / 4) * 4;
+      var need = target - craftCount();
+      if (need <= 0) {
+        say(craftCount() % 4 === 0 ? '이미 4개 단위로 들어가 있습니다.' : '4개를 채울 인형이 부족합니다.');
+        return;
+      }
+      if (!takeFromInv(stage, need)) { say('더 넣을 인형이 없습니다.'); return; }
+      say(stage + '단계 인형을 4개 단위로 넣었습니다.');
+      render();
+    }
+
+    function consume(n) {
+      for (var i = 0; i < craft.length && n > 0; i++) {
+        if (!craft[i]) continue;
+        var take = Math.min(craft[i].qty, n);
+        craft[i].qty -= take;
+        n -= take;
+        if (craft[i].qty <= 0) craft[i] = null;
+      }
+    }
+    function synthesize() {
+      var stage = craftStage();
+      if (!stage) { say('합성칸이 비어 있습니다.'); return; }
+      var times = Math.floor(craftCount() / 4);
+      if (times < 1) { say('인형 4개부터 합성할 수 있습니다.'); return; }
+      consume(times * 4);
+      var successRate = stage === 1 ? 0.4 : 0.3;
+      var got = [];
+      for (var n = 0; n < times; n++) {
+        var win = Math.random() < successRate;
+        var pool = STAGES[win ? stage + 1 : stage];
+        var pick = pool[Math.floor(Math.random() * pool.length)];
+        got.push({ id: pick[0], win: win, from: stage });
+        addInv(pick[0], 1);
+      }
+      say('');
+      render();
+      if (times === 1) showPrize(got[0]);
+      else showMany(got, times);
+    }
+
+    function showRates(stage) {
+      var success = stage === 1 ? 0.4 : 0.3;
+      var fail = 1 - success;
+      var up = STAGES[stage + 1];
+      var same = STAGES[stage];
+      document.getElementById('sheetTitle').textContent = '마법인형 합성 : ' + (stage + 1) + '단계';
+      var html = '';
+      up.forEach(function (pair) {
+        html += '<div class="rate up"><span>마법인형:' + pair[1] + '</span><b>' + (success / 6 * 100).toFixed(7) + '%</b></div>';
+      });
+      same.forEach(function (pair) {
+        html += '<div class="rate"><span>마법인형:' + pair[1] + '</span><b>' + (fail / 6 * 100).toFixed(7) + '%</b></div>';
+      });
+      document.getElementById('sheetRows').innerHTML = html;
+      document.getElementById('sheetSum').textContent = '최종 성공률 ' + Math.round(success * 100) + '%  ·  실패율 ' + Math.round(fail * 100) + '%';
+      document.getElementById('sheet').hidden = false;
+    }
+
+    var prize = document.getElementById('prize');
+    function showPrize(result) {
+      prize.classList.toggle('fail', !result.win);
+      document.getElementById('prizeBanner').textContent = result.win ? '🎉 성공 🎉' : '❌ 합성실패 ❌';
+      document.getElementById('prizeMany').innerHTML = '';
+      document.getElementById('prizeImg').src = ALL[result.id].img;
+      document.getElementById('prizeName').textContent = ALL[result.id].name;
+      document.getElementById('prizeKind').textContent = result.win ? (result.from + 1) + '단계로 합성에 성공했습니다.' : '같은 단계 인형을 얻었습니다.';
+      prize.hidden = false;
+    }
+    function showMany(list, times) {
+      function rows(items) {
+        var tally = {};
+        items.forEach(function (r) { tally[r.id] = (tally[r.id] || 0) + 1; });
+        var keys = Object.keys(tally);
+        if (!keys.length) return '<p class="empty">없음</p>';
+        return keys.map(function (id) {
+          return '<div class="rate"><span class="who"><img src="' + ALL[id].img + '" alt="">' + ALL[id].name + '</span><b>' + tally[id] + '</b></div>';
+        }).join('');
+      }
+      var html = '<p class="split">성공</p>' + rows(list.filter(function (r) { return r.win; }))
+        + '<p class="split fail">실패</p>' + rows(list.filter(function (r) { return !r.win; }));
+      document.getElementById('sheetTitle').textContent = '합성 ' + times + '회';
+      document.getElementById('sheetRows').innerHTML = html;
+      document.getElementById('sheetSum').textContent = '결과는 인벤토리에 들어갔습니다.';
+      document.getElementById('sheet').hidden = false;
+    }
+
+    function resetBoard() {
+      for (var i = 0; i < inv.length; i++) inv[i] = null;
+      inv[0] = { id: 'pouch', qty: 1 };
+      for (var j = 0; j < craft.length; j++) craft[j] = null;
+      say('');
+      document.getElementById('sheet').hidden = true;
+      prize.hidden = true;
+      render();
+    }
+
+    document.getElementById('open').addEventListener('click', function () {
+      resetBoard();
+      document.getElementById('lab').hidden = false;
+    });
+    window.addEventListener('pageshow', function (e) {
+      if (e.persisted) resetBoard();
+    });
+    document.getElementById('close').addEventListener('click', function () { document.getElementById('lab').hidden = true; });
+    document.getElementById('sheetClose').addEventListener('click', function () { document.getElementById('sheet').hidden = true; });
+    document.getElementById('sheet').addEventListener('click', function (e) { if (e.target.id === 'sheet') document.getElementById('sheet').hidden = true; });
+    document.getElementById('prizeClose').addEventListener('click', function () { prize.hidden = true; });
+    prize.addEventListener('click', function (e) { if (e.target === prize) prize.hidden = true; });
+
+    render();
+  </script>
 </body>
 </html>
