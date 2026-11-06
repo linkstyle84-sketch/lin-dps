@@ -190,6 +190,7 @@
     .split:first-child { margin-top:0; }
     .split.fail { color:#e7d7c2; }
     .empty { margin:2px 0 6px; color:var(--muted); font-size:12px; font-weight:700; }
+    #reportNote p { margin:2px 0; line-height:1.45; }
     .sum { margin:12px 0; padding-top:8px; border-top:1px solid rgba(228,195,106,.35); color:var(--gold); font-weight:900; }
     .prize-card { position:relative; width:min(420px,100%); text-align:center; }
     .prize-banner {
@@ -755,8 +756,12 @@
         '<div class="stat"><span>3단계 인형 ' + stat[2].win + '개</span><b>' + adenaText(expect3) + ' × ' + stat[2].win + ' = ' + adenaText(worth3) + '</b></div>' +
         '<div class="stat"><span>인형 기댓값 합계</span><b>' + adenaText(worth) + '</b></div>' +
         '<div class="stat result"><span>결과값</span><b class="' + diffClass + '">' + diffText + '</b></div>';
-      document.getElementById('reportNote').textContent =
-        '결과값은 남은 인형 기댓값 합계에서 지금까지 쓴 금액을 뺀 값입니다. 1단계로 남은 인형은 1개당 220,000아덴, 2단계는 ' + adenaText(expect2) + '아덴, 3단계는 ' + adenaText(expect3) + '아덴입니다. 합성 재료로 쓴 인형은 남은 개수에서 뺍니다.';
+      document.getElementById('reportNote').innerHTML =
+        '<p>(결과값: 남은 인형 기댓값 합계 - 쓴 금액)</p>' +
+        '<p>※ 1~3단계별 기댓값※</p>' +
+        '<p>1단계 인형: ' + adenaText(POUCH_COST) + '</p>' +
+        '<p>2단계 인형: ' + adenaText(expect2) + '</p>' +
+        '<p>3단계 인형: ' + adenaText(expect3) + '</p>';
       document.getElementById('report').hidden = false;
     }
 
