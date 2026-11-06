@@ -168,6 +168,7 @@
       position:absolute; right:3px; bottom:1px; color:#fff8dc; font-size:12px; font-weight:900;
       text-shadow:0 1px 2px #000, 0 0 4px #000; pointer-events:none;
     }
+    .qty.pack { right:2px; font-size:11px; letter-spacing:-0.03em; }
     .msg { width:min(919px,100%); min-height:22px; margin:8px 0 0; color:var(--gold); font-size:13px; font-weight:800; text-align:center; }
     .hint { width:min(919px,100%); margin:6px 0 0; color:var(--muted); font-size:12px; font-weight:700; text-align:center; line-height:1.5; }
     .sheet, .prize {
@@ -225,7 +226,7 @@
         </div>
       </div>
       <p class="msg" id="msg"></p>
-      <p class="hint">주머니를 클릭할 때마다 1단계 인형을 얻습니다. 1·2단계 인형을 클릭하면 합성칸에 쌓이고, 합성칸을 더블클릭하면 인벤토리로 돌아갑니다. 3단계는 재료로 넣을 수 없습니다.</p>
+      <p class="hint">주머니를 클릭할 때마다 1단계 인형을 얻습니다. x4, x20, x100은 그만큼 한 번에 나옵니다. 1·2단계 인형을 클릭하면 합성칸에 쌓이고, 합성칸을 더블클릭하면 인벤토리로 돌아갑니다. 3단계는 재료로 넣을 수 없습니다.</p>
     </div>
 
     <h2>1단계 마법인형</h2>
@@ -348,8 +349,15 @@
       });
     });
 
+    var DOLL_FROM = 4;
     var inv = new Array(32).fill(null);
-    inv[0] = { id: 'pouch', qty: 1 };
+    function setPouches() {
+      inv[0] = { id: 'pouch', grant: 1 };
+      inv[1] = { id: 'pouch', grant: 4 };
+      inv[2] = { id: 'pouch', grant: 20 };
+      inv[3] = { id: 'pouch', grant: 100 };
+    }
+    setPouches();
     var craft = new Array(8).fill(null);
     var msg = document.getElementById('msg');
     var POUCH_COST = 220000;
@@ -414,11 +422,11 @@
     }
 
     function findInv(id) {
-      for (var i = 1; i < inv.length; i++) if (inv[i] && inv[i].id === id) return i;
+      for (var i = DOLL_FROM; i < inv.length; i++) if (inv[i] && inv[i].id === id) return i;
       return -1;
     }
     function emptyInv() {
-      for (var i = 1; i < inv.length; i++) if (!inv[i]) return i;
+      for (var i = DOLL_FROM; i < inv.length; i++) if (!inv[i]) return i;
       return -1;
     }
     function addInv(id, qty) {
@@ -431,7 +439,7 @@
     }
     function countStage(stage) {
       var n = 0;
-      for (var i = 1; i < inv.length; i++) if (inv[i] && ALL[inv[i].id].stage === stage) n += inv[i].qty;
+      for (var i = DOLL_FROM; i < inv.length; i++) if (inv[i] && ALL[inv[i].id].stage === stage) n += inv[i].qty;
       return n;
     }
     function craftStage() {
@@ -517,28 +525,33 @@
       img.src = info.img;
       img.alt = info.name;
       box.appendChild(img);
-      if (item.id !== 'pouch') {
+      if (item.grant > 1) {
+        var mark = document.createElement('span');
+        mark.className = 'qty pack';
+        mark.textContent = 'x' + item.grant;
+        box.appendChild(mark);
+      } else if (item.id !== 'pouch') {
         var q = document.createElement('span');
         q.className = 'qty';
         q.textContent = String(item.qty);
         box.appendChild(q);
       }
-      box.title = info.name + (item.id === 'pouch' ? '' : ' ' + item.qty);
+      box.title = info.name + (item.grant > 1 ? ' x' + item.grant : item.id === 'pouch' ? '' : ' ' + item.qty);
     }
     function packInv() {
       var items = [];
       var seen = {};
-      for (var i = 1; i < inv.length; i++) {
+      for (var i = DOLL_FROM; i < inv.length; i++) {
         var item = inv[i];
-        if (!item) continue;
+        if (!item || item.grant) continue;
         if (seen[item.id] != null) items[seen[item.id]].qty += item.qty;
         else {
           seen[item.id] = items.length;
           items.push({ id: item.id, qty: item.qty });
         }
       }
-      for (var j = 1; j < inv.length; j++) inv[j] = null;
-      for (var k = 0; k < items.length; k++) inv[k + 1] = items[k];
+      for (var j = DOLL_FROM; j < inv.length; j++) inv[j] = null;
+      for (var k = 0; k < items.length; k++) inv[k + DOLL_FROM] = items[k];
     }
     function render() {
       packInv();
@@ -549,16 +562,25 @@
     }
 
     function onInv(index) {
-      if (index === 0) {
-        var pick = STAGES[1][Math.floor(Math.random() * STAGES[1].length)];
-        if (!addInv(pick[0], 1)) { say('인벤토리가 가득 찼습니다.'); return; }
-        spent += POUCH_COST;
-        pouchCount += 1;
-        say(pick[1] + '을 얻었습니다.');
+      var item = inv[index];
+      if (item && item.grant) {
+        var added = 0;
+        var lastName = '';
+        for (var k = 0; k < item.grant; k++) {
+          var pick = STAGES[1][Math.floor(Math.random() * STAGES[1].length)];
+          if (!addInv(pick[0], 1)) break;
+          added += 1;
+          lastName = pick[1];
+        }
+        if (!added) { say('인벤토리가 가득 찼습니다.'); return; }
+        spent += POUCH_COST * added;
+        pouchCount += added;
+        if (item.grant === 1) say(lastName + '을 얻었습니다.');
+        else if (added < item.grant) say('인벤토리가 가득 차서 ' + added + '개만 얻었습니다.');
+        else say('1단계 인형 ' + added + '개를 얻었습니다.');
         render();
         return;
       }
-      var item = inv[index];
       if (!item) return;
       var stage = ALL[item.id].stage;
       if (stage === 3) { say('3단계 인형은 재료로 넣을 수 없습니다.'); return; }
@@ -581,7 +603,7 @@
 
     function takeFromInv(stage, need) {
       var moved = [];
-      for (var i = 1; i < inv.length && need > 0; i++) {
+      for (var i = DOLL_FROM; i < inv.length && need > 0; i++) {
         var item = inv[i];
         if (!item || ALL[item.id].stage !== stage) continue;
         var take = Math.min(item.qty, need);
@@ -740,7 +762,7 @@
 
     function resetBoard() {
       for (var i = 0; i < inv.length; i++) inv[i] = null;
-      inv[0] = { id: 'pouch', qty: 1 };
+      setPouches();
       for (var j = 0; j < craft.length; j++) craft[j] = null;
       spent = 0;
       pouchCount = 0;
