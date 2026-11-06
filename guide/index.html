@@ -207,6 +207,7 @@
       text-align: center;
     }
     .counts b { color: var(--gold); font-size: 18px; font-weight: 900; }
+    .counts[hidden] { display: none; }
     @media (max-width: 640px) {
       .banner-row { grid-template-columns: 1fr; }
       .banner-row img { height: auto; }
@@ -252,7 +253,7 @@
       "개발사 또는 서비스사"와는 전혀 무관합니다.</span>
       <span class="site-note">건의사항 또는 버그 및 오류제보는 <a href="feedback.html">피드백 게시판</a>을 이용해주세요.</span>
     </p>
-    <p class="counts"><span>방문자 수: <b id="guide">…</b></span><span>무기 DPS 측정기 방문자수: <b id="tool">…</b></span></p>
+    <p class="counts" hidden><span>방문자 수: <b id="guide">…</b></span><span>무기 DPS 측정기 방문자수: <b id="tool">…</b></span></p>
   </div>
   <div class="soon" id="soon" hidden>
     <p class="soon-card" role="dialog" aria-modal="true">업데이트 준비중 입니다.</p>
